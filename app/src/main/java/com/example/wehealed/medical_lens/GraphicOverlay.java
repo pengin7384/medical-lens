@@ -160,6 +160,7 @@ public class GraphicOverlay<T extends GraphicOverlay.Graphic> extends View {
     public void add(T graphic) {
         synchronized (lock) {
             graphics.add(graphic);
+
         }
         postInvalidate();
     }

@@ -36,11 +36,14 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
     private static Paint rectPaint;
     private static Paint textPaint;
     private final TextBlock text;
+    private int num;
 
-    OcrGraphic(GraphicOverlay overlay, TextBlock text) {
+
+    OcrGraphic(GraphicOverlay overlay, TextBlock text, int num) {
         super(overlay);
 
         this.text = text;
+        this.num = num;
 
         if (rectPaint == null) {
             rectPaint = new Paint();
@@ -106,6 +109,7 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
         } else {
             str = text.getValue();
         }
+        str = "(" + num + ") " + str;
         canvas.drawText(str, rect.left, rect.bottom, textPaint);
 
 

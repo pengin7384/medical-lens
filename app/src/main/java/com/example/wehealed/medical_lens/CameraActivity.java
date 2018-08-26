@@ -33,10 +33,12 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -44,9 +46,11 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.example.wehealed.medical_lens.CameraSource;
 import com.example.wehealed.medical_lens.CameraSourcePreview;
 import com.example.wehealed.medical_lens.GraphicOverlay;
+import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Activity for the Ocr Detecting app.  This app detects text and displays the value with the
@@ -77,6 +81,9 @@ public final class CameraActivity extends AppCompatActivity {
 
     // A TextToSpeech engine for speaking a String value.
     private TextToSpeech tts;
+    private Button btnCapture;
+    private OcrDetectorProcessor processor;
+
 
     /**
      * Initializes the UI and creates the detector pipeline.
@@ -88,6 +95,9 @@ public final class CameraActivity extends AppCompatActivity {
 
         preview = (CameraSourcePreview) findViewById(R.id.preview);
         graphicOverlay = (GraphicOverlay<OcrGraphic>) findViewById(R.id.graphicOverlay);
+        btnCapture = findViewById(R.id.button_main_capture);
+        btnCapture.setOnClickListener(mClickListener);
+
 
         // Set good defaults for capturing text.
         boolean autoFocus = true;
@@ -111,6 +121,33 @@ public final class CameraActivity extends AppCompatActivity {
 
         // TODO: Set up the Text To Speech engine.
     }
+
+    Button.OnClickListener mClickListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.button_main_capture:
+                    ArrayList<String> list = new ArrayList<String >();
+                    SparseArray<TextBlock> items = processor.getItems();
+                    if(items != null) {
+                        for (int i = 0; i < items.size(); ++i) {
+                            TextBlock item = items.valueAt(i);
+                            if (item != null && item.getValue() != null) {
+                                list.add(item.getValue().toString());
+                            }
+                        }
+                    }
+
+                    Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
+                    intent.putExtra("items", list);
+                    startActivity(intent);
+
+                    break;
+
+
+            }
+
+        }
+    };
 
     /**
      * Handles the requesting of the camera permission.  This includes
@@ -168,7 +205,9 @@ public final class CameraActivity extends AppCompatActivity {
         // TODO: Create the TextRecognizer
         TextRecognizer textRecognizer = new TextRecognizer.Builder(context).build();
         // TODO: Set the TextRecognizer's Processor.
-        textRecognizer.setProcessor(new OcrDetectorProcessor(graphicOverlay));
+        processor = new OcrDetectorProcessor(graphicOverlay);
+        textRecognizer.setProcessor(processor);
+
         // TODO: Check if the TextRecognizer is operational.
         if (!textRecognizer.isOperational()) {
             Log.w(TAG, "Detector dependencies are not yet available.");
