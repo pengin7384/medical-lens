@@ -4,7 +4,7 @@ Samsung AI Challenge 2018
 Team Wehealed
 
 
-#Library
+# Library
 Google Vision API
 
 https://cloud.google.com/vision/docs/ocr
