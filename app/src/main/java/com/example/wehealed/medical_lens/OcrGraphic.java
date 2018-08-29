@@ -109,7 +109,8 @@ public class OcrGraphic extends GraphicOverlay.Graphic {
         } else {
             str = text.getValue();
         }
-        str = "(" + num + ") " + str;
+       // str = "(" + num + ") " + str;
+        str = "(" + String.valueOf(text.getBoundingBox().centerY()) + ") " + str;
         canvas.drawText(str, rect.left, rect.bottom, textPaint);
 
 

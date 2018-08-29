@@ -185,6 +185,7 @@ public class CameraSource {
             }
 
             this.detector = detector;
+
             cameraSource.context = context;
         }
 

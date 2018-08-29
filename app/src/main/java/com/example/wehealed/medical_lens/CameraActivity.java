@@ -51,6 +51,7 @@ import com.google.android.gms.vision.text.TextRecognizer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Activity for the Ocr Detecting app.  This app detects text and displays the value with the
@@ -122,12 +123,17 @@ public final class CameraActivity extends AppCompatActivity {
         // TODO: Set up the Text To Speech engine.
     }
 
+
+    // Capture
     Button.OnClickListener mClickListener = new View.OnClickListener() {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.button_main_capture:
                     ArrayList<String> list = new ArrayList<String >();
                     SparseArray<TextBlock> items = processor.getItems();
+
+
+/*
                     if(items != null) {
                         for (int i = 0; i < items.size(); ++i) {
                             TextBlock item = items.valueAt(i);
@@ -135,8 +141,27 @@ public final class CameraActivity extends AppCompatActivity {
                                 list.add(item.getValue().toString());
                             }
                         }
+                    }*/
+
+                    ArrayList<TextData> arrayList = new ArrayList<TextData>();
+
+
+                    if(items != null) {
+                        for (int i = 0; i < items.size(); ++i) {
+                            TextBlock item = items.valueAt(i);
+                            if (item != null && item.getValue() != null) {
+                                arrayList.add(new TextData(item.getBoundingBox().centerY(),item.getValue()));
+                            }
+                        }
+                    }
+                    if(items != null) {
+                        Collections.sort(arrayList);
+                        for (int i = 0; i < arrayList.size(); ++i) {
+                            list.add(arrayList.get(i).getText());
+                        }
                     }
 
+                    
                     Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
                     intent.putExtra("items", list);
                     startActivity(intent);
