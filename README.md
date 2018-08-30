@@ -10,8 +10,10 @@ Google Vision API
 https://cloud.google.com/vision/docs/ocr
 
 
-# Development environment
+# Client Development environment
 Android Studio 3.1.3
 
 Android 7.0.0
+
+# Server Development environment
 
