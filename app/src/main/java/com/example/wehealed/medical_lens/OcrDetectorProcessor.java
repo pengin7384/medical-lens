@@ -20,7 +20,12 @@ import android.util.SparseArray;
 
 import com.example.wehealed.medical_lens.GraphicOverlay;
 import com.google.android.gms.vision.Detector;
+import com.google.android.gms.vision.text.Line;
+import com.google.android.gms.vision.text.Text;
 import com.google.android.gms.vision.text.TextBlock;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A very simple Processor which gets detected TextBlocks and adds them to the overlay
@@ -44,6 +49,14 @@ public class OcrDetectorProcessor implements Detector.Processor<TextBlock> {
 
             if (item != null && item.getValue() != null) {
                 Log.d("Processor", "Text detected! " + item.getValue());
+/*
+                List<Text> all_lines = new ArrayList<>();
+                List<? extends Text> texts = item.getComponents();
+
+                for (Text t: texts) {
+                    all_lines.add(t);
+                }*/
+
 
                 OcrGraphic graphic = new OcrGraphic(graphicOverlay, item, i);
                 graphicOverlay.add(graphic);

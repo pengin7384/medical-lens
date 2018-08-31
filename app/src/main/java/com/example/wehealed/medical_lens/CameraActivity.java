@@ -46,12 +46,14 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.example.wehealed.medical_lens.CameraSource;
 import com.example.wehealed.medical_lens.CameraSourcePreview;
 import com.example.wehealed.medical_lens.GraphicOverlay;
+import com.google.android.gms.vision.text.Text;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Activity for the Ocr Detecting app.  This app detects text and displays the value with the
@@ -145,12 +147,19 @@ public final class CameraActivity extends AppCompatActivity {
 
                     ArrayList<TextData> arrayList = new ArrayList<TextData>();
 
-
                     if(items != null) {
                         for (int i = 0; i < items.size(); ++i) {
                             TextBlock item = items.valueAt(i);
                             if (item != null && item.getValue() != null) {
-                                arrayList.add(new TextData(item.getBoundingBox().centerY(),item.getValue()));
+                                /*
+                                List<? extends Text> texts = item.getComponents();
+                                for (Text line: texts) { // Line 단위
+
+                                    for (Text element : line.getComponents()) { // Word 단위
+                                        arrayList.add(new TextData(element.getBoundingBox().centerY() , element.getValue()));
+                                    }
+                                }*/
+                                arrayList.add(new TextData(item.getBoundingBox().centerY(),item.getValue())); // 블럭단위로 가져오기
                             }
                         }
                     }
@@ -231,6 +240,8 @@ public final class CameraActivity extends AppCompatActivity {
         TextRecognizer textRecognizer = new TextRecognizer.Builder(context).build();
         // TODO: Set the TextRecognizer's Processor.
         processor = new OcrDetectorProcessor(graphicOverlay);
+
+        // OCR processor
         textRecognizer.setProcessor(processor);
 
         // TODO: Check if the TextRecognizer is operational.
@@ -365,6 +376,7 @@ public final class CameraActivity extends AppCompatActivity {
                 cameraSource = null;
             }
         }
+
     }
 
     /**
