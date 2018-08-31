@@ -2,11 +2,14 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from WeHealedAPI.models import Dictionary
 from WeHealedAPI.serializers import WeHealedAPISerializer
 
 # Create your views here.
+def index(request):
+    return HttpResponse("Medical Lens")
+
 def detail(request):
     t = 'LV'
     dic = Dictionary.objects.get(abbreviation_text=t)

@@ -15,10 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.urls import path
 
 from WeHealedAPI import views, api
 
 urlpatterns = [
+    path('', views.index, name='index'),
     url(r'^admin/', admin.site.urls),
     url(r'^test/', views.detail),
     url(r'^api/substitution/', api.substitution),
