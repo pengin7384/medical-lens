@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                     break;
                 case R.id.button_gallery:
-                    //requestRead(); 
+                    requestRead();
                     break;
                 case R.id.button_url:
 

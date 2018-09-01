@@ -126,24 +126,13 @@ public final class CameraActivity extends AppCompatActivity {
     }
 
 
-    // Capture
+    // Button Event
     Button.OnClickListener mClickListener = new View.OnClickListener() {
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.button_main_capture:
+                case R.id.button_main_capture:  // 캡처 버튼
                     ArrayList<String> list = new ArrayList<String >();
                     SparseArray<TextBlock> items = processor.getItems();
-
-
-/*
-                    if(items != null) {
-                        for (int i = 0; i < items.size(); ++i) {
-                            TextBlock item = items.valueAt(i);
-                            if (item != null && item.getValue() != null) {
-                                list.add(item.getValue().toString());
-                            }
-                        }
-                    }*/
 
                     ArrayList<TextData> arrayList = new ArrayList<TextData>();
 
@@ -151,15 +140,16 @@ public final class CameraActivity extends AppCompatActivity {
                         for (int i = 0; i < items.size(); ++i) {
                             TextBlock item = items.valueAt(i);
                             if (item != null && item.getValue() != null) {
-                                /*
                                 List<? extends Text> texts = item.getComponents();
                                 for (Text line: texts) { // Line 단위
+                                    arrayList.add(new TextData(line.getBoundingBox().centerY(), line.getValue()));
 
+                                    /*
                                     for (Text element : line.getComponents()) { // Word 단위
                                         arrayList.add(new TextData(element.getBoundingBox().centerY() , element.getValue()));
-                                    }
-                                }*/
-                                arrayList.add(new TextData(item.getBoundingBox().centerY(),item.getValue())); // 블럭단위로 가져오기
+                                    }*/
+                                }
+                                //arrayList.add(new TextData(item.getBoundingBox().centerY(),item.getValue())); // 블럭단위로 가져오기
                             }
                         }
                     }
