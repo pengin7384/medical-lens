@@ -25,8 +25,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -52,6 +56,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static android.content.Intent.ACTION_MEDIA_SCANNER_SCAN_FILE;
+
 /**
  * Activity for the Ocr Detecting app.  This app detects text and displays the value with the
  * rear facing camera. During detection overlay graphics are drawn to indicate the position,
@@ -65,6 +71,28 @@ public final class CameraActivity extends AppCompatActivity {
 
     // Permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
+
+
+    /**
+     * Timeout for the pre-capture sequence.
+     */
+    private static final long PRECAPTURE_TIMEOUT_MS = 1000;
+
+    /**
+     * Tolerance when comparing aspect ratios.
+     */
+    private static final double ASPECT_RATIO_TOLERANCE = 0.005;
+
+    /**
+     * Max preview width that is guaranteed by Camera2 API
+     */
+    private static final int MAX_PREVIEW_WIDTH = 1920;
+
+    /**
+     * Max preview height that is guaranteed by Camera2 API
+     */
+    private static final int MAX_PREVIEW_HEIGHT = 1080;
+
 
     // Constants used to pass extra data in the intent
     public static final String AutoFocus = "AutoFocus";
@@ -131,6 +159,35 @@ public final class CameraActivity extends AppCompatActivity {
                 case R.id.button_main_capture:  // 캡처 버튼
 
                     // 카메라 사진 촬영 이미지 저장
+                    cameraSource.takePicture(null, null);
+
+                    /*
+                    cameraSource.takePicture(null, new Camera.PictureCallback(){
+                        public void onPictureTaken(byte[] data, Camera camera) {
+                            try {
+                                Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                                String outUriStr = MediaStore.Images.Media.insertImage(
+                                        getContentResolver(),
+                                        bitmap,
+                                        "Captured Image", "Captured Image Using Camera"
+                                );
+
+                                if (outUriStr == null) {
+                                    Log.d("Sample Capture", "Image insert failed");
+                                    return;
+                                }
+                                else {
+                                    Uri outUri = Uri.parse(outUriStr);
+                                    sendBroadcast(new Intent(ACTION_MEDIA_SCANNER_SCAN_FILE, outUri));
+                                }
+
+                                camera.startPreview();
+                            } catch (Exception e) {
+                                Log.e("WeHealed", "Failed to capture the image", e);
+                            }
+                        }
+                    });
+                    */
 
                     // 사진으로부터 텍스트 추출
                     ArrayList<String> list = new ArrayList<String >();
