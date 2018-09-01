@@ -12,4 +12,9 @@
     <string name="ocr_success">Text read successfully</string>
     <string name="ocr_failure">No text captured</string>
     <string name="ocr_error">"Error reading text: %1$s"</string>
+    <string name="professional_translation">Professional Translation</string>
+    <string name="camera_capture">Capture</string>
+    <string name="title_activity_professional_translation">전문 의료번역 서비스</string>
+    <string name="question_professional_translation">전문 의료번역 서비스를 신청하시겠습니까?</string>
+    <string name="title_button_professional_translation">신청</string>
 </resources>

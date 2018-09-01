@@ -43,9 +43,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.example.wehealed.medical_lens.CameraSource;
-import com.example.wehealed.medical_lens.CameraSourcePreview;
-import com.example.wehealed.medical_lens.GraphicOverlay;
 import com.google.android.gms.vision.text.Text;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
@@ -96,6 +93,7 @@ public final class CameraActivity extends AppCompatActivity {
         super.onCreate(bundle);
         setContentView(R.layout.activity_camera);
 
+
         preview = (CameraSourcePreview) findViewById(R.id.preview);
         graphicOverlay = (GraphicOverlay<OcrGraphic>) findViewById(R.id.graphicOverlay);
         btnCapture = findViewById(R.id.button_main_capture);
@@ -131,6 +129,10 @@ public final class CameraActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.button_main_capture:  // 캡처 버튼
+
+                    // 카메라 사진 촬영 이미지 저장
+
+                    // 사진으로부터 텍스트 추출
                     ArrayList<String> list = new ArrayList<String >();
                     SparseArray<TextBlock> items = processor.getItems();
 
@@ -160,8 +162,9 @@ public final class CameraActivity extends AppCompatActivity {
                         }
                     }
 
+                    // 추출된 텍스트들을 전처리
                     
-                    Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), CaptureResultActivity.class);
                     intent.putExtra("items", list);
                     startActivity(intent);
 

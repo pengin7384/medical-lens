@@ -5,14 +5,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.android.gms.vision.text.TextBlock;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -20,7 +20,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ResultActivity extends AppCompatActivity {
+public class CaptureResultActivity extends AppCompatActivity {
     //static final String[] list = {"123","123"};
     static final String URL = "https://wehealedapi.run.goorm.io/api/";
     private ArrayList<String> list;
@@ -29,7 +29,7 @@ public class ResultActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_result);
+        setContentView(R.layout.activity_capture_result);
 
         Intent intent = getIntent();
         ArrayList<String> list = intent.getStringArrayListExtra("items");
@@ -39,6 +39,8 @@ public class ResultActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
 
         index();
+
+        findViewById(R.id.buttonProfessionalTranslation).setOnClickListener(mClickListener);
     }
 
 
@@ -70,5 +72,16 @@ public class ResultActivity extends AppCompatActivity {
             }
         });
     }
+
+    Button.OnClickListener mClickListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.buttonProfessionalTranslation:
+                    Intent intent = new Intent(getApplicationContext(), ProfessionalTranslationActivity.class);
+                    startActivity(intent);
+                    break;
+            }
+        }
+    };
 
 }
