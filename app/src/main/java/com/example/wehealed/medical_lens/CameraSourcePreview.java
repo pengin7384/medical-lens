@@ -31,13 +31,11 @@ import java.io.IOException;
 
 public class CameraSourcePreview extends ViewGroup {
     private static final String TAG = "CameraSourcePreview";
-
     private Context context;
     private SurfaceView surfaceView;
     private boolean startRequested;
     private boolean surfaceAvailable;
     private CameraSource cameraSource;
-
     private GraphicOverlay overlay;
 
     public CameraSourcePreview(Context context, AttributeSet attrs) {

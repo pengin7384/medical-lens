@@ -5,7 +5,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 public interface RetrofitService {
-    @GET("test/")
+    @GET("token/")
     Call<TextItem> getIndex(
             @Query("text") String text
     );

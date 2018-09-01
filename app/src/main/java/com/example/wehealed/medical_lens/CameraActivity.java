@@ -132,6 +132,7 @@ public final class CameraActivity extends AppCompatActivity {
             switch (v.getId()) {
                 case R.id.button_main_capture:  // 캡처 버튼
                     ArrayList<String> list = new ArrayList<String >();
+
                     SparseArray<TextBlock> items = processor.getItems();
 
                     ArrayList<TextData> arrayList = new ArrayList<TextData>();
