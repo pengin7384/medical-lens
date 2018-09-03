@@ -5,9 +5,9 @@ Team Wehealed
 
 
 # Library
-Google Vision API
+Google Mobile Vision API
 
-https://cloud.google.com/vision/docs/ocr
+https://developers.google.com/vision/android/text-overview
 
 
 # Development environment
