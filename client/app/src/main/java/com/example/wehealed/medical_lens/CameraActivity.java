@@ -28,8 +28,10 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.hardware.Camera.PictureCallback;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
@@ -51,10 +53,16 @@ import com.google.android.gms.vision.text.Text;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import static android.content.Intent.ACTION_MEDIA_SCANNER_SCAN_FILE;
 
@@ -71,28 +79,6 @@ public final class CameraActivity extends AppCompatActivity {
 
     // Permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
-
-
-    /**
-     * Timeout for the pre-capture sequence.
-     */
-    private static final long PRECAPTURE_TIMEOUT_MS = 1000;
-
-    /**
-     * Tolerance when comparing aspect ratios.
-     */
-    private static final double ASPECT_RATIO_TOLERANCE = 0.005;
-
-    /**
-     * Max preview width that is guaranteed by Camera2 API
-     */
-    private static final int MAX_PREVIEW_WIDTH = 1920;
-
-    /**
-     * Max preview height that is guaranteed by Camera2 API
-     */
-    private static final int MAX_PREVIEW_HEIGHT = 1080;
-
 
     // Constants used to pass extra data in the intent
     public static final String AutoFocus = "AutoFocus";
@@ -144,10 +130,6 @@ public final class CameraActivity extends AppCompatActivity {
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
 
-        Snackbar.make(graphicOverlay, "Tap to Speak. Pinch/Stretch to zoom",
-                Snackbar.LENGTH_LONG)
-                .show();
-
         // TODO: Set up the Text To Speech engine.
     }
 
@@ -157,81 +139,122 @@ public final class CameraActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.button_main_capture:  // 캡처 버튼
+                    takePictureAndDoNext();
+                    break;
 
-                    // 카메라 사진 촬영 이미지 저장
-                    cameraSource.takePicture(null, null);
+            }
+        }
+    };
 
-                    /*
-                    cameraSource.takePicture(null, new Camera.PictureCallback(){
-                        public void onPictureTaken(byte[] data, Camera camera) {
+    private void takePictureAndDoNext() {
+
+        // 카메라 사진 촬영 이미지 저장
+        cameraSource.takePicture(null, new com.example.wehealed.medical_lens.CameraSource.PictureCallback(){
+            public void onPictureTaken(byte[] data, Camera camera) {
+                try {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                    Log.d("WeHealed TakePicture", "length = " + data.length);
+
+                    String currentDateTime = generateTimestamp();
+
+                    File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                    //File file = getExternalFilesDir(null);
+                    if (!file.exists()) {
+                        file.mkdirs();
+                    }
+
+                    String filePath = file.getAbsolutePath();
+                    File fileItem = new File(filePath, "Medical-Lens_" + currentDateTime + ".jpg");
+
+                    Log.d("WeHealed TakePicture", "Filename = " + filePath + "/" + fileItem.getName() );
+
+                    FileOutputStream output = null;
+                    try {
+                        file.createNewFile();
+
+                        output = new FileOutputStream(fileItem);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
+                        //output.write(bytes);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        if (null != output) {
                             try {
-                                Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                                String outUriStr = MediaStore.Images.Media.insertImage(
-                                        getContentResolver(),
-                                        bitmap,
-                                        "Captured Image", "Captured Image Using Camera"
-                                );
-
-                                if (outUriStr == null) {
-                                    Log.d("Sample Capture", "Image insert failed");
-                                    return;
-                                }
-                                else {
-                                    Uri outUri = Uri.parse(outUriStr);
-                                    sendBroadcast(new Intent(ACTION_MEDIA_SCANNER_SCAN_FILE, outUri));
-                                }
-
-                                camera.startPreview();
-                            } catch (Exception e) {
-                                Log.e("WeHealed", "Failed to capture the image", e);
+                                output.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
                         }
-                    });
-                    */
+                    }
 
-                    // 사진으로부터 텍스트 추출
-                    ArrayList<String> list = new ArrayList<String >();
-                    SparseArray<TextBlock> items = processor.getItems();
+                    String outUriStr = MediaStore.Images.Media.insertImage(
+                            getContentResolver(),
+                            bitmap,
+                            fileItem.getName(), "Medical-Lens Image"
+                    );
 
-                    ArrayList<TextData> arrayList = new ArrayList<TextData>();
+                    if (outUriStr == null) {
+                        Log.d("WeHealed Capture", "Image insert failed");
+                        return;
+                    }
+                    else {
+                        Uri outUri = Uri.parse(outUriStr);
+                        Log.d(TAG, "TakePicture result : " + outUri);
+                        Toast.makeText(getApplicationContext(),"카메라로 찍은 사진을 앨범에 저장했습니다.",Toast.LENGTH_LONG).show();
+                        sendBroadcast(new Intent(ACTION_MEDIA_SCANNER_SCAN_FILE, outUri));
+                    }
 
-                    if(items != null) {
-                        for (int i = 0; i < items.size(); ++i) {
-                            TextBlock item = items.valueAt(i);
-                            if (item != null && item.getValue() != null) {
-                                List<? extends Text> texts = item.getComponents();
-                                for (Text line: texts) { // Line 단위
-                                    arrayList.add(new TextData(line.getBoundingBox().centerY(), line.getValue()));
+                    camera.startPreview();
+                } catch (Exception e) {
+                    Log.e("WeHealed", "Failed to capture the image", e);
+                }
+            }
+        });
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // 사진으로부터 텍스트 추출
+        ArrayList<String> list = new ArrayList<String >();
+        SparseArray<TextBlock> items = processor.getItems();
+
+        ArrayList<TextData> arrayList = new ArrayList<TextData>();
+
+        if(items != null) {
+            for (int i = 0; i < items.size(); ++i) {
+                TextBlock item = items.valueAt(i);
+                if (item != null && item.getValue() != null) {
+                    List<? extends Text> texts = item.getComponents();
+                    for (Text line: texts) { // Line 단위
+                        arrayList.add(new TextData(line.getBoundingBox().centerY(), line.getValue()));
 
                                     /*
                                     for (Text element : line.getComponents()) { // Word 단위
                                         arrayList.add(new TextData(element.getBoundingBox().centerY() , element.getValue()));
                                     }*/
-                                }
-                                //arrayList.add(new TextData(item.getBoundingBox().centerY(),item.getValue())); // 블럭단위로 가져오기
-                            }
-                        }
                     }
-                    if(items != null) {
-                        Collections.sort(arrayList);
-                        for (int i = 0; i < arrayList.size(); ++i) {
-                            list.add(arrayList.get(i).getText());
-                        }
-                    }
-
-                    // 추출된 텍스트들을 전처리
-                    
-                    Intent intent = new Intent(getApplicationContext(), CaptureResultActivity.class);
-                    intent.putExtra("items", list);
-                    startActivity(intent);
-
-                    break;
-
-
+                    //arrayList.add(new TextData(item.getBoundingBox().centerY(),item.getValue())); // 블럭단위로 가져오기
+                }
             }
-
         }
-    };
+        if(items != null) {
+            Collections.sort(arrayList);
+            for (int i = 0; i < arrayList.size(); ++i) {
+                list.add(arrayList.get(i).getText());
+            }
+        }
+
+        // 추출된 텍스트들을 전처리
+
+        Intent intent = new Intent(getApplicationContext(), CaptureResultActivity.class);
+        intent.putExtra("items", list);
+        startActivity(intent);
+
+    }
 
     /**
      * Handles the requesting of the camera permission.  This includes
@@ -504,4 +527,15 @@ public final class CameraActivity extends AppCompatActivity {
             }
         }
     }
+
+    /**
+     * Generate a string containing a formatted timestamp with the current date and time.
+     *
+     * @return a {@link String} representing a time.
+     */
+    private static String generateTimestamp() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.KOREA);
+        return sdf.format(new Date());
+    }
+
 }

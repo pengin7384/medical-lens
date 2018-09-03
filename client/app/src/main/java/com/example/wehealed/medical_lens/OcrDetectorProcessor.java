@@ -48,7 +48,7 @@ public class OcrDetectorProcessor implements Detector.Processor<TextBlock> {
             TextBlock item = items.valueAt(i);
 
             if (item != null && item.getValue() != null) {
-                Log.d("Processor", "Text detected! " + item.getValue());
+                //Log.d("WeHealed Processor", "Text detected! " + item.getValue());
 /*
                 List<Text> all_lines = new ArrayList<>();
                 List<? extends Text> texts = item.getComponents();

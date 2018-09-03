@@ -17,4 +17,5 @@
     <string name="title_activity_professional_translation">전문 의료번역 서비스</string>
     <string name="question_professional_translation">전문 의료번역 서비스를 신청하시겠습니까?</string>
     <string name="title_button_professional_translation">신청</string>
+    <string name="request_permission">This app needs camera permission.</string>
 </resources>

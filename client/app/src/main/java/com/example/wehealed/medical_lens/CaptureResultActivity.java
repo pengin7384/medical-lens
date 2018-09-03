@@ -62,7 +62,7 @@ public class CaptureResultActivity extends AppCompatActivity {
                     //textViewIndex.setText(repo.getName());'
                     //Log.d(this.getClass().getName(), repo.getText());
 
-                    Log.d("Result", ":" + repo.getText());
+                    Log.d("WeHealed Result", ":" + repo.getText());
                 }
             }
 
