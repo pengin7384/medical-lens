@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <ImageView
@@ -15,18 +16,34 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp">
 
-        <TextView
-            android:id="@+id/picture_time"
-            android:layout_width="280dp"
+        <FrameLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="New Text"
-            android:textColor="@android:color/holo_blue_dark"
-            android:textSize="40dp"
-            android:textStyle="bold" />
+            >
+            <TextView
+                android:id="@+id/picture_time"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:text="New Text"
+                android:textColor="@android:color/holo_blue_dark"
+                android:textSize="40dp"
+                android:textStyle="bold" />
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="right"
+                android:id="@+id/checkBox1"
+                android:focusable="false"
+
+                android:layout_weight="1" />
+        </FrameLayout>
+
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/text_view_picture_file_name"

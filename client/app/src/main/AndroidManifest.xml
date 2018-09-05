@@ -39,7 +39,8 @@
             android:name=".Activity_35_Human_Translation_Request"
             android:label="@string/title_activity_professional_translation" />
         <activity android:name=".Activity_91_Terms" />
-        <activity android:name=".Activity_38_Human_Translation_Result"></activity>
+        <activity android:name=".Activity_38_Human_Translation_Result" />
+        <activity android:name=".Activity_40_Compare"></activity>
     </application>
 
 </manifest>

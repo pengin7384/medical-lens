@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -73,14 +74,18 @@ public class Activity_10_Home extends AppCompatActivity
         findViewById(R.id.button_gallery).setOnClickListener(mClickListener);
 
         historyListView = (ListView) findViewById(R.id.history_listview);
-        historyListAdapter = new HistoryListAdapter(this);
+        historyListAdapter = new HistoryListAdapter(this); // android.R.layout.simple_list_item_multiple_choice
         historyListView.setAdapter(historyListAdapter);
+
+
         historyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 HistoryItem item = (HistoryItem) historyListAdapter.getItem(position);
                 Toast.makeText(getApplicationContext(), "선택 : " + item.getPictureFileName(), Toast.LENGTH_LONG).show();
+                
             }
+
         });
 
     }
@@ -101,7 +106,7 @@ public class Activity_10_Home extends AppCompatActivity
                         Log.i(Constants.LOG_TAG, "historyId " + historyId + " pictureFileName " + pictureFileName);
 
                         historyListAdapter.addItem(new HistoryItem(historyId, pictureFileName));
-
+                        //historyListAdapter.notifyDataSetChanged();
                     } while (cursor.moveToNext());
                 }
             }
@@ -260,8 +265,10 @@ public class Activity_10_Home extends AppCompatActivity
                 itemView = (HistoryItemView) convertView;
             }
 
+
             itemView.setHistoryId(items.get(position).getHistoryId());
             itemView.setPictureFileName(items.get(position).getPictureFileName());
+
 
             return itemView;
         }
