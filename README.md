@@ -11,6 +11,9 @@
 
 * https://developers.google.com/vision/android/text-overview
 
+## Scanner
+
+* https://github.com/jhansireddy/AndroidScannerDemo
 
 
 
