@@ -1,10 +1,14 @@
 package com.example.wehealed.medical_lens;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -20,7 +24,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class CaptureResultActivity extends AppCompatActivity {
+public class Activity_30_Translate_Result extends AppCompatActivity {
     //static final String[] list = {"123","123"};
     static final String URL = "https://wehealedapi.run.goorm.io/api/";
     private ArrayList<String> list;
@@ -29,7 +33,15 @@ public class CaptureResultActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_capture_result);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        setContentView(R.layout.activity_30__translate_result);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_translate_result);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowCustomEnabled(true); //커스터마이징 하기 위해 필요
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true); // 뒤로가기 버튼
 
         Intent intent = getIntent();
         ArrayList<String> list = intent.getStringArrayListExtra("items");
@@ -40,9 +52,19 @@ public class CaptureResultActivity extends AppCompatActivity {
 
         index();
 
-        findViewById(R.id.buttonProfessionalTranslation).setOnClickListener(mClickListener);
+        findViewById(R.id.button_go_human_translation_request_activity).setOnClickListener(mClickListener);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:{
+                finish();
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     // 서버 통신
     public void index() {
@@ -76,12 +98,11 @@ public class CaptureResultActivity extends AppCompatActivity {
     Button.OnClickListener mClickListener = new View.OnClickListener() {
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.buttonProfessionalTranslation:
-                    Intent intent = new Intent(getApplicationContext(), ProfessionalTranslationActivity.class);
+                case R.id.button_go_human_translation_request_activity:
+                    Intent intent = new Intent(getApplicationContext(), Activity_35_Human_Translation_Request.class);
                     startActivity(intent);
                     break;
             }
         }
     };
-
 }

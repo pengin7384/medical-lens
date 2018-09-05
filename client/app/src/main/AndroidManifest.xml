@@ -25,19 +25,21 @@
             android:name="com.google.android.gms.vision.DEPENDENCIES"
             android:value="ocr" />
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".Activity_01_Logo">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CameraActivity" />
-        <activity android:name=".CaptureResultActivity" />
+        <activity android:name=".Activity_10_Home" />
+        <activity android:name=".Activity_20_Camera" />
+        <activity android:name=".Activity_30_Translate_Result" />
         <activity
-            android:name=".ProfessionalTranslationActivity"
-            android:label="@string/title_activity_professional_translation"
-            android:theme="@style/AppTheme"></activity>
+            android:name=".Activity_35_Human_Translation_Request"
+            android:label="@string/title_activity_professional_translation" />
+        <activity android:name=".Activity_91_Terms" />
+        <activity android:name=".Activity_38_Human_Translation_Result"></activity>
     </application>
 
 </manifest>

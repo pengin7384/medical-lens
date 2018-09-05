@@ -24,11 +24,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
-import android.hardware.Camera.PictureCallback;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -37,10 +37,13 @@ import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.GestureDetector;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -56,13 +59,13 @@ import com.google.android.gms.vision.text.TextRecognizer;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import static android.content.Intent.ACTION_MEDIA_SCANNER_SCAN_FILE;
 
@@ -71,8 +74,10 @@ import static android.content.Intent.ACTION_MEDIA_SCANNER_SCAN_FILE;
  * rear facing camera. During detection overlay graphics are drawn to indicate the position,
  * size, and contents of each TextBlock.
  */
-public final class CameraActivity extends AppCompatActivity {
+public final class Activity_20_Camera extends AppCompatActivity {
     private static final String TAG = "OcrCaptureActivity";
+
+    DBHelper dbHelper;
 
     // Intent request code to handle updating play services if needed.
     private static final int RC_HANDLE_GMS = 9001;
@@ -105,8 +110,22 @@ public final class CameraActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        setContentView(R.layout.activity_camera);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        setContentView(R.layout.activity_20__camera);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_camera);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowCustomEnabled(true); //커스터마이징 하기 위해 필요
+        actionBar.setDisplayShowTitleEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(true); // 뒤로가기 버튼
+
+        try {
+            dbHelper = DBHelper.getInstance(getApplicationContext());
+        }
+        catch (Exception e) {
+            Log.i(Constants.LOG_TAG, e.toString());
+        }
 
         preview = (CameraSourcePreview) findViewById(R.id.preview);
         graphicOverlay = (GraphicOverlay<OcrGraphic>) findViewById(R.id.graphicOverlay);
@@ -146,6 +165,17 @@ public final class CameraActivity extends AppCompatActivity {
         }
     };
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:{
+                finish();
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void takePictureAndDoNext() {
 
         // 카메라 사진 촬영 이미지 저장
@@ -155,26 +185,46 @@ public final class CameraActivity extends AppCompatActivity {
                     Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
                     Log.d("WeHealed TakePicture", "length = " + data.length);
 
-                    String currentDateTime = generateTimestamp();
+                    long currentTime = System.currentTimeMillis();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.KOREA);
+                    String currentDateTimeString = sdf.format(new Date(currentTime));
+                    String timeStampString = TimeUnit.MILLISECONDS.toSeconds(currentTime) + "";
 
-                    File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-                    //File file = getExternalFilesDir(null);
-                    if (!file.exists()) {
-                        file.mkdirs();
+                    // 파일을 스마트폰 내장 메모리 -> DCIM/Medical-Lens/ 폴더에 저장한다
+                    File externalStorageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+                    //File externalStorageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                    if (!externalStorageDirectory.exists()) {
+                        externalStorageDirectory.mkdirs();
                     }
 
-                    String filePath = file.getAbsolutePath();
-                    File fileItem = new File(filePath, "Medical-Lens_" + currentDateTime + ".jpg");
+                    String pictureStorageDirectoryPath = externalStorageDirectory.getAbsolutePath() + "/Medical-Lens";
+                    File pictureStorageDirectory = new File(pictureStorageDirectoryPath);
+                    if (!pictureStorageDirectory.exists()) {
+                        pictureStorageDirectory.mkdirs();
+                    }
 
-                    Log.d("WeHealed TakePicture", "Filename = " + filePath + "/" + fileItem.getName() );
+                    File fileItem = new File(pictureStorageDirectoryPath, currentDateTimeString + ".jpg");
+
+                    Log.d("WeHealed TakePicture", "Filename = " + pictureStorageDirectoryPath + "/" + fileItem.getName() );
 
                     FileOutputStream output = null;
                     try {
-                        file.createNewFile();
+                        // 불필요?
+                        //pictureStorageDirectory.createNewFile();
 
                         output = new FileOutputStream(fileItem);
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
-                        //output.write(bytes);
+
+                        dbHelper.exec("INSERT INTO PICTURE_HISTORY_V5 (" +
+                                "PICTURE_FILE_NAME" +
+                                ", PICTURE_TIME" +
+                                ", ORIGINAL_TEXT, MACHINE_TRANSLATION_RESULT" +
+                                ", HUMAN_TRANSLATION_REQUESTED, HUMAN_TRANSLATION_REQUEST_TIME, HUMAN_TRANSLATION_RESPONSE_TIME, HUMAN_TRANSLATION_RESULT, HUMAN_TRANSLATION_CONFIRMED) " +
+                                "VALUES (" +
+                                "'" + pictureStorageDirectoryPath + "/" + fileItem.getName() + "'" +
+                                ", '" + timeStampString + "'" +
+                                ", '', ''" +
+                                ", '', '', '', '', 'N');");
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -188,6 +238,8 @@ public final class CameraActivity extends AppCompatActivity {
                         }
                     }
 
+                    // 사진을 앨범에 저장한다
+                    /*
                     String outUriStr = MediaStore.Images.Media.insertImage(
                             getContentResolver(),
                             bitmap,
@@ -204,6 +256,7 @@ public final class CameraActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(),"카메라로 찍은 사진을 앨범에 저장했습니다.",Toast.LENGTH_LONG).show();
                         sendBroadcast(new Intent(ACTION_MEDIA_SCANNER_SCAN_FILE, outUri));
                     }
+                    */
 
                     camera.startPreview();
                 } catch (Exception e) {
@@ -229,31 +282,29 @@ public final class CameraActivity extends AppCompatActivity {
                 TextBlock item = items.valueAt(i);
                 if (item != null && item.getValue() != null) {
                     List<? extends Text> texts = item.getComponents();
-                    for (Text line: texts) { // Line 단위
+                    for (Text line : texts) { // Line 단위
                         arrayList.add(new TextData(line.getBoundingBox().centerY(), line.getValue()));
 
-                                    /*
-                                    for (Text element : line.getComponents()) { // Word 단위
-                                        arrayList.add(new TextData(element.getBoundingBox().centerY() , element.getValue()));
-                                    }*/
+                        /*
+                        for (Text element : line.getComponents()) { // Word 단위
+                            arrayList.add(new TextData(element.getBoundingBox().centerY() , element.getValue()));
+                        }*/
                     }
                     //arrayList.add(new TextData(item.getBoundingBox().centerY(),item.getValue())); // 블럭단위로 가져오기
                 }
             }
-        }
-        if(items != null) {
+
             Collections.sort(arrayList);
             for (int i = 0; i < arrayList.size(); ++i) {
                 list.add(arrayList.get(i).getText());
             }
+
+            // 추출된 텍스트들을 전처리
+            Intent intent = new Intent(getApplicationContext(), Activity_30_Translate_Result.class);
+            intent.putExtra("items", list);
+            startActivity(intent);
+            finish();
         }
-
-        // 추출된 텍스트들을 전처리
-
-        Intent intent = new Intent(getApplicationContext(), CaptureResultActivity.class);
-        intent.putExtra("items", list);
-        startActivity(intent);
-
     }
 
     /**
