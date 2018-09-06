@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -22,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +32,7 @@ import android.widget.Toast;
 import com.scanlibrary.ScanActivity;
 import com.scanlibrary.ScanConstants;
 
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -79,28 +83,53 @@ public class Activity_10_Home extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 HistoryItem item = (HistoryItem) historyListAdapter.getItem(position);
+
+                Intent intent = new Intent(getApplicationContext(), Activity_30_Translate_Result.class);
+                intent.putExtra("historyId", item.getHistoryId());
+
                 Toast.makeText(getApplicationContext(), "선택 : " + item.getPictureFileName(), Toast.LENGTH_LONG).show();
+
+                startActivity(intent);
             }
         });
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        prepareInformation();
+        loadHistoryList();
+    }
+
+    protected void prepareInformation() {
+
+    }
+
+    protected void loadHistoryList() {
+
+        historyListAdapter = new HistoryListAdapter(this);
 
         try {
-            Cursor cursor = dbHelper.get("SELECT * FROM PICTURE_HISTORY_V5 ORDER BY HISTORY_ID ASC");
+            Cursor cursor = dbHelper.get("SELECT * FROM PICTURE_HISTORY_V5 ORDER BY HISTORY_ID DESC");
 
             try {
                 if (cursor.moveToFirst()) {
                     do {
                         int historyId = cursor.getInt(cursor.getColumnIndex("HISTORY_ID"));
+                        int pictureTime = cursor.getInt(cursor.getColumnIndex("PICTURE_TIME"));
+                        String picturePathAndFileName = cursor.getString(cursor.getColumnIndex("PICTURE_PATH_AND_FILE_NAME"));
                         String pictureFileName = cursor.getString(cursor.getColumnIndex("PICTURE_FILE_NAME"));
+                        String summaryText = cursor.getString(cursor.getColumnIndex("SUMMARY_TEXT"));
 
-                        Log.i(Constants.LOG_TAG, "historyId " + historyId + " pictureFileName " + pictureFileName);
+                        Log.i(Constants.LOG_TAG, "HISTORY_ID " + historyId
+                                + " PICTURE_TIME" + pictureTime
+                                + " PICTURE_PATH_AND_FILE_NAME " + picturePathAndFileName
+                                + " PICTURE_FILE_NAME " + pictureFileName
+                                + " SUMMARY_TEXT " + summaryText
+                        );
 
-                        historyListAdapter.addItem(new HistoryItem(historyId, pictureFileName));
+                        HistoryItem newItem = new HistoryItem(historyId, picturePathAndFileName, pictureFileName, pictureTime, summaryText);
+                        historyListAdapter.addItem(newItem);
 
                     } while (cursor.moveToNext());
                 }
@@ -120,10 +149,8 @@ public class Activity_10_Home extends AppCompatActivity
             Log.i(Constants.LOG_TAG, e.toString());
         }
 
+        historyListView.setAdapter(historyListAdapter);
     }
-
-
-
 
     /**
      * Drawer 메뉴 눌렀을 때 처리
@@ -235,6 +262,10 @@ public class Activity_10_Home extends AppCompatActivity
             return items.size();
         }
 
+        public void clear() {
+            items.clear();
+        }
+
         public void addItem(HistoryItem item) {
             items.add(item);
         }
@@ -260,8 +291,10 @@ public class Activity_10_Home extends AppCompatActivity
                 itemView = (HistoryItemView) convertView;
             }
 
-            itemView.setHistoryId(items.get(position).getHistoryId());
-            itemView.setPictureFileName(items.get(position).getPictureFileName());
+            itemView.setPicture(
+                    items.get(position).getPicturePathAndFileName(),
+                    items.get(position).getPictureFileName(),
+                    items.get(position).getPictureTime());
 
             return itemView;
         }
