@@ -1,4 +1,4 @@
-# Medical-Lens
+﻿# Medical-Lens
 
 ## Team Wehealed
 
@@ -9,8 +9,15 @@
 
 ## Google Vision API
 
-* https://cloud.google.com/vision/docs/ocr
+* https://developers.google.com/vision/android/text-overview
 
+## Google Cloud Natural Language API
+
+* https://cloud.google.com/natural-language/
+
+## Scanner
+
+* https://github.com/jhansireddy/AndroidScannerDemo
 
 
 
@@ -37,6 +44,7 @@
 * 시동 명령어 : python manage.py runserver
 
 * 작동 확인 : http://127.0.0.1:8000
+>>>>>>> origin/develop-ux
 
 
 

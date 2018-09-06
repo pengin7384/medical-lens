@@ -103,6 +103,7 @@ public final class Activity_20_Camera extends AppCompatActivity {
     private TextToSpeech tts;
     private Button btnCapture;
     private OcrDetectorProcessor processor;
+    private String fileName="";
 
 
     /**
@@ -222,25 +223,22 @@ public final class Activity_20_Camera extends AppCompatActivity {
                 pictureFileName = fileItem.getName();
 
                 // 사진을 앨범에 저장한다
-                        /*
-                        String outUriStr = MediaStore.Images.Media.insertImage(
-                                getContentResolver(),
-                                bitmap,
-                                fileItem.getName(), "Medical-Lens Image"
-                        );
-
-                        if (outUriStr == null) {
-                            Log.d("WeHealed Capture", "Image insert failed");
-                            return;
-                        }
-                        else {
-                            Uri outUri = Uri.parse(outUriStr);
-                            Log.d(TAG, "TakePicture result : " + outUri);
-                            Toast.makeText(getApplicationContext(),"카메라로 찍은 사진을 앨범에 저장했습니다.",Toast.LENGTH_LONG).show();
-                            sendBroadcast(new Intent(ACTION_MEDIA_SCANNER_SCAN_FILE, outUri));
-                        }
-                        */
-
+//                String outUriStr = MediaStore.Images.Media.insertImage(
+//                        getContentResolver(),
+//                        bitmap,
+//                        fileItem.getName(), "Medical-Lens Image"
+//                );
+//
+//                if (outUriStr == null) {
+//                    Log.d("WeHealed Capture", "Image insert failed");
+//                    return;
+//                }
+//                else {
+//                    Uri outUri = Uri.parse(outUriStr);
+//                    Log.d(TAG, "TakePicture result : " + outUri);
+//                    Toast.makeText(getApplicationContext(),"카메라로 찍은 사진을 앨범에 저장했습니다.",Toast.LENGTH_LONG).show();
+//                    sendBroadcast(new Intent(ACTION_MEDIA_SCANNER_SCAN_FILE, outUri));
+//                }
 
                 // 사진으로부터 텍스트 추출 한다
                 ArrayList<String> list = new ArrayList<String >();
@@ -273,7 +271,7 @@ public final class Activity_20_Camera extends AppCompatActivity {
                 }
 
                 String originalText = "";
-                // 추출된 텍스트들을 전처리한다
+                // TODO : 추출된 텍스트들을 전처리한다. 일단은 | 로 묶어서 DB에 저장함
                 for (int i = 0; i < list.size(); ++i) {
                     originalText += list.get(i) + "|";
                 }
@@ -354,7 +352,6 @@ public final class Activity_20_Camera extends AppCompatActivity {
 //        } catch (InterruptedException e) {
 //            e.printStackTrace();
 //        }
-
     }
 
     /**

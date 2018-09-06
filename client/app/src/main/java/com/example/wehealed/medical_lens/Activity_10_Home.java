@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -77,8 +78,10 @@ public class Activity_10_Home extends AppCompatActivity
         findViewById(R.id.button_gallery).setOnClickListener(mClickListener);
 
         historyListView = (ListView) findViewById(R.id.history_listview);
-        historyListAdapter = new HistoryListAdapter(this);
+        historyListAdapter = new HistoryListAdapter(this); // android.R.layout.simple_list_item_multiple_choice
         historyListView.setAdapter(historyListAdapter);
+
+
         historyListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -88,9 +91,9 @@ public class Activity_10_Home extends AppCompatActivity
                 intent.putExtra("historyId", item.getHistoryId());
 
                 Toast.makeText(getApplicationContext(), "선택 : " + item.getPictureFileName(), Toast.LENGTH_LONG).show();
-
                 startActivity(intent);
             }
+
         });
     }
 

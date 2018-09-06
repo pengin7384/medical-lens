@@ -37,7 +37,6 @@ public class CameraSourcePreview extends ViewGroup {
     private boolean startRequested;
     private boolean surfaceAvailable;
     private CameraSource cameraSource;
-
     private GraphicOverlay overlay;
 
     public CameraSourcePreview(Context context, AttributeSet attrs) {

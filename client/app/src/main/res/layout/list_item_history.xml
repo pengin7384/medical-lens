@@ -28,17 +28,29 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/picture_time"
+        <FrameLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_weight="1"
-            android:text="2018-01-23 45:12:34"
-            android:textColor="@android:color/holo_blue_dark"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="wrap_content"
+            >
+            <TextView
+                android:id="@+id/picture_time"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:text="New Text"
+                android:textColor="@android:color/holo_blue_dark"
+                android:textSize="14dp"
+                android:textStyle="bold" />
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="right"
+                android:id="@+id/checkBox1"
+                android:focusable="false"
+
+                android:layout_weight="1" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/text_view_picture_file_name"
@@ -52,6 +64,5 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
     </LinearLayout>
 </LinearLayout>

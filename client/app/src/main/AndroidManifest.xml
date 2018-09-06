@@ -9,7 +9,6 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -39,7 +38,8 @@
             android:name=".Activity_35_Human_Translation_Request"
             android:label="@string/title_activity_professional_translation" />
         <activity android:name=".Activity_91_Terms" />
-        <activity android:name=".Activity_38_Human_Translation_Result"></activity>
+        <activity android:name=".Activity_38_Human_Translation_Result" />
+        <activity android:name=".Activity_40_Compare"></activity>
     </application>
 
 </manifest>

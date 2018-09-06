@@ -58,6 +58,16 @@ public class OcrDetectorProcessor implements Detector.Processor<TextBlock> {
                 }*/
 
 
+
+/*
+                List<Text> all_lines = new ArrayList<>();
+                List<? extends Text> texts = item.getComponents();
+
+                for (Text t: texts) {
+                    all_lines.add(t);
+                }*/
+
+
                 OcrGraphic graphic = new OcrGraphic(graphicOverlay, item, i);
                 graphicOverlay.add(graphic);
             }

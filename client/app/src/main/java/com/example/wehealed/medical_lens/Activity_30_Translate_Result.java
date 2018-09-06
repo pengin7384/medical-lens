@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -19,8 +18,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.vision.text.TextBlock;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,10 +30,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Activity_30_Translate_Result extends AppCompatActivity {
-    //static final String[] list = {"123","123"};
-    static final String URL = "https://wehealedapi.run.goorm.io/api/";
-    private ArrayList<String> list;
-    private SparseArray<TextBlock> items;
+    static final String URL = "https://wehealedapi2.run.goorm.io/api/";
+
+    //private SparseArray<TextBlock> items;
 
     DBHelper dbHelper;
 
@@ -85,20 +81,15 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 
         findViewById(R.id.button_go_human_translation_request_activity).setOnClickListener(mClickListener);
 
-        prepareInformation();
-
-        sendAndReceiveMachineTranslationResult();
+        initialize();
     }
 
     @Override
     protected void onNewIntent(Intent newIntent) {
-
-        prepareInformation();
-
-        sendAndReceiveMachineTranslationResult();
+        initialize();
     }
 
-    private void prepareInformation() {
+    private void initialize() {
 
         // Intent 정보로 넘어온 historyId 수신
         Intent intent = getIntent();
@@ -142,16 +133,21 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 
         // 클라이언트 DB 데이터 -> originalText 표시
         translationResultListViewAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
-
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> arrayList = new ArrayList<String>();
         StringTokenizer st = new StringTokenizer(originalText, "|");
         while (st.hasMoreTokens()) {
             String sentence = st.nextToken();
-            list.add(sentence);
+            arrayList.add(sentence);
         }
-        translationResultListViewAdapter.addAll(list);
-
+        translationResultListViewAdapter.addAll(arrayList);
         translationResultListView.setAdapter(translationResultListViewAdapter);
+
+        Sentence[] sentences = new Sentence[arrayList.size()];
+        for(int i=0; i<arrayList.size(); i++) {
+            Sentence s = new Sentence(i+1,arrayList.get(i),"");
+            sentences[i] = s;
+        }
+        sendAndReceiveMachineTranslationResult(sentences);
     }
 
     @Override
@@ -165,10 +161,11 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // 서버 통신
-    public void sendAndReceiveMachineTranslationResult() {
+    /*
+    // 서버로 번역을 요청한다
+    // Get 방식
+    public void sendAndReceiveMachineTranslationResult(String text) {
 
-        // 서버로 번역을 요청한다
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -176,44 +173,12 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 
         RetrofitService retrofitService = retrofit.create(RetrofitService.class);
 
-        Call<TextItem> call = retrofitService.getIndex("asdf");
+        Call<TextItem> call = retrofitService.getIndex(text);
         call.enqueue(new Callback<TextItem>() {
             @Override
             public void onResponse(Call<TextItem> call, Response<TextItem> response) {
                 TextItem repo = response.body();
-                if(repo != null) {
-
-                    // 서버로부터 번역 결과를 받아 표시한다
-                    String machineTranslateResponse = repo.getText();
-                    machineTranslateResultTextView.setText(machineTranslateResponse);
-
-                    try {
-                        // 서버 수신 데이터 -> DB 에 기록한다
-                        dbHelper.exec("UPDATE PICTURE_HISTORY_V5 SET " +
-                                "MACHINE_TRANSLATION_RESULT = '" + machineTranslateResponse + "' " +
-                                "WHERE HISTORY_ID = '"+ historyId+"';");
-
-                        Log.d("WeHealed", "Machine Translation Result Saved :" + machineTranslateResponse);
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace();
-
-                        Log.d("WeHealed", "Machine Translation Result Save Failed");
-                    }
-
-                    // Test용 데이터
-                    String machineTranslateResponseSentences = "안녕|세계";
-                    // 서버 수신 데이터 -> 표시
-                    ArrayList<String> list = new ArrayList<String>();
-                    StringTokenizer st = new StringTokenizer(machineTranslateResponseSentences, "|");
-                    while (st.hasMoreTokens()) {
-                        String sentence = st.nextToken();
-                        list.add(sentence);
-                    }
-                    translationResultListViewAdapter.clear();
-                    translationResultListViewAdapter.addAll(list);
-
-                }
+                processResponse(repo);
             }
 
             @Override
@@ -222,6 +187,80 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Machine Translation Failure", Toast.LENGTH_LONG).show();
             }
         });
+    }
+    */
+
+    // 서버로 번역을 요청한다
+    // Post + Json 방식
+    public void sendAndReceiveMachineTranslationResult(Sentence[] sentences) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        RetrofitService retrofitService = retrofit.create(RetrofitService.class);
+        MachineTranslationRequestJSON requestJSON = new MachineTranslationRequestJSON(pictureFileName, sentences);
+/*
+        for(int i=0; i<requestJSON.getSentences().length; i++) {
+            Log.d("WeHealed JSON", requestJSON.getSentences()[i].getOriginal_sentence());
+        }*/
+        Call<MachineTranslationResponseJSON> call = retrofitService.getJSON(requestJSON);
+        call.enqueue(new Callback<MachineTranslationResponseJSON>() {
+            @Override
+            public void onResponse(Call<MachineTranslationResponseJSON> call, Response<MachineTranslationResponseJSON> response) {
+                MachineTranslationResponseJSON repo = response.body();
+                processResponse(repo);
+            }
+
+            @Override
+            public void onFailure(Call<MachineTranslationResponseJSON> call, Throwable t) {
+                Log.d("WeHealed", "Machine Translation Failure");
+                Toast.makeText(getApplicationContext(), "Machine Translation Failure", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    // 서버로부터 번역 결과를 받아 처리한다
+    protected void processResponse(MachineTranslationResponseJSON responseJSON) {
+
+        String machineTranslateResponse = "";
+
+        if(responseJSON != null) {
+
+            // TODO : 서버 수신 데이터 -> DB 에 기록한다
+            machineTranslateResponse = responseJSON.getPicture_file_name();
+            try {
+                dbHelper.exec("UPDATE PICTURE_HISTORY_V5 SET " +
+                        "MACHINE_TRANSLATION_RESULT = '" + machineTranslateResponse + "' " +
+                        "WHERE HISTORY_ID = '" + historyId + "';");
+
+                Log.d("WeHealed Response", "Machine Translation Result Saved :" + machineTranslateResponse);
+                Log.d("WeHealed Response", responseJSON.getSentences()[0].getOriginal_sentence());
+                Log.d("WeHealed Response",responseJSON.getDescribing_urls()[0].getKey() + "  :  " + responseJSON.getDescribing_urls()[0].getUrl());
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                Log.d("WeHealed", "Machine Translation Result Save Failed");
+            }
+
+            // 서버 수신 데이터 -> 임시로 원본 표시
+            Log.d("WeHealed Response",responseJSON.toString());
+            //machineTranslateResultTextView.setText(responseJSON.getPicture_file_name());
+            machineTranslateResultTextView.setText(responseJSON.toString());
+
+            // TODO : 서버 수신 데이터 -> 파싱해서 표시
+            String machineTranslateResponseSentences = "안녕|세계";
+            translationResultListViewAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
+
+            ArrayList<String> arrayList = new ArrayList<String>();
+            StringTokenizer st = new StringTokenizer(machineTranslateResponseSentences, "|");
+            while (st.hasMoreTokens()) {
+                String sentence = st.nextToken();
+                arrayList.add(sentence);
+                translationResultListViewAdapter.add(sentence);
+            }
+            translationResultListView.setAdapter(translationResultListViewAdapter);
+        }
     }
 
     Button.OnClickListener mClickListener = new View.OnClickListener() {
