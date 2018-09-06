@@ -269,12 +269,12 @@ public final class Activity_20_Camera extends AppCompatActivity {
                 }
             }
         });
-/*
+
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }*/
+        }
 
         // 사진으로부터 텍스트 추출
         ArrayList<String> list = new ArrayList<String >();
