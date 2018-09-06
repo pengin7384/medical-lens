@@ -42,7 +42,7 @@ class AsyncServiceHelper
         mAppContext = AppContext;
     }
 
-    protected static final String TAG = "OpenCVManager/Helper";
+    protected static final String TAG = "WeHealed OpenCVManager/Helper";
     protected static final int MINIMUM_ENGINE_VERSION = 2;
     protected OpenCVEngineInterface mEngineService;
     protected LoaderCallbackInterface mUserAppCallback;

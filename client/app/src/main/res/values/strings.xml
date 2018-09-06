@@ -12,4 +12,22 @@
     <string name="ocr_success">Text read successfully</string>
     <string name="ocr_failure">No text captured</string>
     <string name="ocr_error">"Error reading text: %1$s"</string>
+    <string name="camera_capture">Capture</string>
+    <string name="title_activity_professional_translation">전문 의료번역 서비스</string>
+    <string name="question_professional_translation">전문 의료번역 서비스를 신청하시겠습니까?</string>
+    <string name="title_button_professional_translation">신청</string>
+    <string name="request_permission">This app needs camera permission.</string>
+
+
+    <!-- Strings related to Drawer -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+
+    <string name="translatation_history">Translation History</string>
+    <string name="human_translation_request">전문 의료번역 의뢰하기</string>
+    <string name="translation_warning">주의사항</string>
+
 </resources>

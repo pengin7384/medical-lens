@@ -70,6 +70,7 @@ public class ScanFragment extends Fragment {
             @Override
             public void run() {
                 original = getBitmap();
+                //Log.d("Bitmap",": Height:"+original.getHeight()+" Width:"+original.getWidth());
                 if (original != null) {
                     setBitmap(original);
                 }
@@ -81,6 +82,7 @@ public class ScanFragment extends Fragment {
         Uri uri = getUri();
         try {
             Bitmap bitmap = Utils.getBitmap(getActivity(), uri);
+            //Log.d("Bitmap",": Height:"+bitmap.getHeight()+" Width:"+bitmap.getWidth());
             getActivity().getContentResolver().delete(uri, null, null);
             return bitmap;
         } catch (IOException e) {
@@ -95,6 +97,7 @@ public class ScanFragment extends Fragment {
     }
 
     private void setBitmap(Bitmap original) {
+
         Bitmap scaledBitmap = scaledBitmap(original, sourceFrame.getWidth(), sourceFrame.getHeight());
         sourceImageView.setImageBitmap(scaledBitmap);
         Bitmap tempBitmap = ((BitmapDrawable) sourceImageView.getDrawable()).getBitmap();
@@ -192,7 +195,7 @@ public class ScanFragment extends Fragment {
         float y2 = (points.get(1).y) * yRatio;
         float y3 = (points.get(2).y) * yRatio;
         float y4 = (points.get(3).y) * yRatio;
-        Log.d("", "POints(" + x1 + "," + y1 + ")(" + x2 + "," + y2 + ")(" + x3 + "," + y3 + ")(" + x4 + "," + y4 + ")");
+        Log.d("WeHealed ScanFragment", "POints(" + x1 + "," + y1 + ")(" + x2 + "," + y2 + ")(" + x3 + "," + y3 + ")(" + x4 + "," + y4 + ")");
         Bitmap _bitmap = ((ScanActivity) getActivity()).getScannedBitmap(original, x1, y1, x2, y2, x3, y3, x4, y4);
         return _bitmap;
     }

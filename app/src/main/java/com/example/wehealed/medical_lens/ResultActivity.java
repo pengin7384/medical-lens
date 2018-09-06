@@ -38,12 +38,18 @@ public class ResultActivity extends AppCompatActivity {
         ListView listView = (ListView)findViewById(R.id.listView1);
         listView.setAdapter(adapter);
 
-        index();
+        String str="";
+
+        for(int i=0; i<list.size(); i++) {
+            str = str + list.get(i) + "\n";
+        }
+
+        index(str);
     }
 
 
     // 서버 통신
-    public void index() {
+    public void index(String str) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -51,7 +57,7 @@ public class ResultActivity extends AppCompatActivity {
 
         RetrofitService retrofitService = retrofit.create(RetrofitService.class);
         //Call<TextItem> call = retrofitService.getIndex("mos");
-        Call<TextItem> call = retrofitService.getIndex("asdf");
+        Call<TextItem> call = retrofitService.getIndex(str);
         call.enqueue(new Callback<TextItem>() {
             @Override
             public void onResponse(Call<TextItem> call, Response<TextItem> response) {
@@ -60,7 +66,7 @@ public class ResultActivity extends AppCompatActivity {
                     //textViewIndex.setText(repo.getName());'
                     //Log.d(this.getClass().getName(), repo.getText());
 
-                    Log.d("Result", ":" + repo.getText());
+                    Log.d("Result", "\n" + repo.getText());
                 }
             }
 

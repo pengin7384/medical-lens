@@ -78,7 +78,7 @@ public class CameraSource {
     @SuppressLint("InlinedApi")
     public static final int CAMERA_FACING_FRONT = CameraInfo.CAMERA_FACING_FRONT;
 
-    private static final String TAG = "OpenCameraSource";
+    private static final String TAG = "WeHealed OpenCameraSource";
 
     /**
      * The dummy surface texture must be assigned a chosen name.  Since we never use an OpenGL
@@ -276,7 +276,7 @@ public class CameraSource {
          * Called when image data is available after a picture is taken.  The format of the data
          * is a jpeg binary.
          */
-        void onPictureTaken(byte[] data);
+        void onPictureTaken(byte[] data, Camera camera);
     }
 
     /**
@@ -699,7 +699,7 @@ public class CameraSource {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
             if (mDelegate != null) {
-                mDelegate.onPictureTaken(data);
+                mDelegate.onPictureTaken(data, camera);
             }
             synchronized (cameraLock) {
                 if (CameraSource.this.camera != null) {

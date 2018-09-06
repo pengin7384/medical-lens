@@ -4,13 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ResultActivity">
-    <ListView
-        android:id="@+id/listView1"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:divider="#ffcc22"
-        android:dividerHeight="1.5dp"
-        android:choiceMode="singleChoice"
-        />
+    tools:context=".Activity_40_Compare">
+
 </android.support.constraint.ConstraintLayout>
