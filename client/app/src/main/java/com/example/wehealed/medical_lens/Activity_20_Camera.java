@@ -102,6 +102,7 @@ public final class Activity_20_Camera extends AppCompatActivity {
     private TextToSpeech tts;
     private Button btnCapture;
     private OcrDetectorProcessor processor;
+    private String fileName="";
 
 
     /**
@@ -190,6 +191,8 @@ public final class Activity_20_Camera extends AppCompatActivity {
                     String currentDateTimeString = sdf.format(new Date(currentTime));
                     String timeStampString = TimeUnit.MILLISECONDS.toSeconds(currentTime) + "";
 
+                    //fileName = currentDateTimeString + ".jpg";
+
                     // 파일을 스마트폰 내장 메모리 -> DCIM/Medical-Lens/ 폴더에 저장한다
                     File externalStorageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
                     //File externalStorageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
@@ -206,6 +209,8 @@ public final class Activity_20_Camera extends AppCompatActivity {
                     File fileItem = new File(pictureStorageDirectoryPath, currentDateTimeString + ".jpg");
 
                     Log.d("WeHealed TakePicture", "Filename = " + pictureStorageDirectoryPath + "/" + fileItem.getName() );
+                    //Toast.makeText(getApplicationContext(), "Filename = " + pictureStorageDirectoryPath + "/" + fileItem.getName() , Toast.LENGTH_LONG).show();
+
 
                     FileOutputStream output = null;
                     try {
@@ -264,12 +269,12 @@ public final class Activity_20_Camera extends AppCompatActivity {
                 }
             }
         });
-
+/*
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
+        }*/
 
         // 사진으로부터 텍스트 추출
         ArrayList<String> list = new ArrayList<String >();
@@ -299,9 +304,12 @@ public final class Activity_20_Camera extends AppCompatActivity {
                 list.add(arrayList.get(i).getText());
             }
 
+            Toast.makeText(getApplicationContext(), "파일명1: " + fileName, Toast.LENGTH_LONG).show();
+
             // 추출된 텍스트들을 전처리
             Intent intent = new Intent(getApplicationContext(), Activity_30_Translate_Result.class);
             intent.putExtra("items", list);
+            intent.putExtra("name", fileName);
             startActivity(intent);
             finish();
         }

@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.gms.vision.text.TextBlock;
 
@@ -26,9 +27,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Activity_30_Translate_Result extends AppCompatActivity {
     //static final String[] list = {"123","123"};
-    static final String URL = "https://wehealedapi.run.goorm.io/api/";
+    static final String URL = "https://wehealedapi2.run.goorm.io/api/";
     private ArrayList<String> list;
     private SparseArray<TextBlock> items;
+    private String fileName="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,17 +47,33 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 
         Intent intent = getIntent();
         ArrayList<String> list = intent.getStringArrayListExtra("items");
+        //fileName = intent.getStringExtra("name");
+        fileName = "test.jpg";
+
+        Toast.makeText(getApplicationContext(), "파일명: " + fileName, Toast.LENGTH_LONG).show();
 
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
         ListView listView = (ListView)findViewById(R.id.listView1);
         listView.setAdapter(adapter);
-
+/*
         String text = "";
         for(int i=0; i<list.size(); i++) {
             text = text + list.get(i) + "\n";
+        }*/
+
+        Sentence[] sentences = new Sentence[list.size()];
+
+        for(int i=0; i<list.size(); i++) {
+            Sentence s = new Sentence(i+1,list.get(i),"");
+            sentences[i] = s;
         }
 
-        index(text);
+        index2(sentences);
+
+
+
+
+        //index(sentences);
 
         findViewById(R.id.button_go_human_translation_request_activity).setOnClickListener(mClickListener);
     }
@@ -95,6 +113,39 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<TextItem> call, Throwable t) {
+
+            }
+        });
+    }
+
+    // Post + Json방식
+    public void index2(Sentence[] sentences) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        RetrofitService retrofitService = retrofit.create(RetrofitService.class);
+        MachineTranslationRequestJSON requestJSON = new MachineTranslationRequestJSON(fileName,sentences);
+/*
+        for(int i=0; i<requestJSON.getSentences().length; i++) {
+            Log.d("WeHealed JSON", requestJSON.getSentences()[i].getOriginal_sentence());
+        }*/
+        Call<MachineTranslationResponseJSON> call = retrofitService.getJSON(requestJSON);
+        call.enqueue(new Callback<MachineTranslationResponseJSON>() {
+            @Override
+            public void onResponse(Call<MachineTranslationResponseJSON> call, Response<MachineTranslationResponseJSON> response) {
+                MachineTranslationResponseJSON repo = response.body();
+                Log.d("WeHealed Response","Response");
+                if(repo != null) {
+                    Log.d("WeHealed Response",repo.getPicture_file_name());
+
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MachineTranslationResponseJSON> call, Throwable t) {
 
             }
         });
