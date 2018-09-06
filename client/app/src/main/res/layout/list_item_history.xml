@@ -1,20 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="130dp"
+    android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/picture_image"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="160dp"
+        android:layout_height="120dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:src="@drawable/singer" />
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp">
+        android:layout_height="120dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/picture_timestamp"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:text="123987"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <FrameLayout
             android:orientation="horizontal"
@@ -28,7 +40,7 @@
 
                 android:text="New Text"
                 android:textColor="@android:color/holo_blue_dark"
-                android:textSize="40dp"
+                android:textSize="14dp"
                 android:textStyle="bold" />
             <CheckBox
                 android:layout_width="wrap_content"
@@ -40,21 +52,17 @@
                 android:layout_weight="1" />
         </FrameLayout>
 
-
-        <RelativeLayout
+        <TextView
+            android:id="@+id/text_view_picture_file_name"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/text_view_picture_file_name"
-                android:layout_width="266dp"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_marginTop="6dp"
-                android:text="New Text"
-                android:textColor="#0223e0"
-                android:textSize="20dp" />
-
-        </RelativeLayout>
+            android:layout_height="60dp"
+            android:layout_alignParentLeft="true"
+            android:text="2018-12-12_12_34_12.jpg"
+            android:textColor="#0223e0"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </LinearLayout>
 </LinearLayout>

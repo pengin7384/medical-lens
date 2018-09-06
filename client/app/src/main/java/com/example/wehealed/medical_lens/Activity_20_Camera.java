@@ -26,13 +26,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -67,8 +66,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-import static android.content.Intent.ACTION_MEDIA_SCANNER_SCAN_FILE;
-
 /**
  * Activity for the Ocr Detecting app.  This app detects text and displays the value with the
  * rear facing camera. During detection overlay graphics are drawn to indicate the position,
@@ -78,6 +75,10 @@ public final class Activity_20_Camera extends AppCompatActivity {
     private static final String TAG = "OcrCaptureActivity";
 
     DBHelper dbHelper;
+
+    int historyId = 0;
+    String picturePathAndFileName = "";
+    String pictureFileName = "";
 
     // Intent request code to handle updating play services if needed.
     private static final int RC_HANDLE_GMS = 9001;
@@ -159,7 +160,7 @@ public final class Activity_20_Camera extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.button_main_capture:  // 캡처 버튼
-                    takePictureAndDoNext();
+                    onTakePictureButtonClick();
                     break;
 
             }
@@ -177,142 +178,180 @@ public final class Activity_20_Camera extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void takePictureAndDoNext() {
-
-        // 카메라 사진 촬영 이미지 저장
-        cameraSource.takePicture(null, new com.example.wehealed.medical_lens.CameraSource.PictureCallback(){
-            public void onPictureTaken(byte[] data, Camera camera) {
-                try {
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                    Log.d("WeHealed TakePicture", "length = " + data.length);
-
-                    long currentTime = System.currentTimeMillis();
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.KOREA);
-                    String currentDateTimeString = sdf.format(new Date(currentTime));
-                    String timeStampString = TimeUnit.MILLISECONDS.toSeconds(currentTime) + "";
-
-                    //fileName = currentDateTimeString + ".jpg";
-
-                    // 파일을 스마트폰 내장 메모리 -> DCIM/Medical-Lens/ 폴더에 저장한다
-                    File externalStorageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-                    //File externalStorageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-                    if (!externalStorageDirectory.exists()) {
-                        externalStorageDirectory.mkdirs();
-                    }
-
-                    String pictureStorageDirectoryPath = externalStorageDirectory.getAbsolutePath() + "/Medical-Lens";
-                    File pictureStorageDirectory = new File(pictureStorageDirectoryPath);
-                    if (!pictureStorageDirectory.exists()) {
-                        pictureStorageDirectory.mkdirs();
-                    }
-
-                    File fileItem = new File(pictureStorageDirectoryPath, currentDateTimeString + ".jpg");
-
-                    Log.d("WeHealed TakePicture", "Filename = " + pictureStorageDirectoryPath + "/" + fileItem.getName() );
-                    //Toast.makeText(getApplicationContext(), "Filename = " + pictureStorageDirectoryPath + "/" + fileItem.getName() , Toast.LENGTH_LONG).show();
-
-
-                    FileOutputStream output = null;
-                    try {
-                        // 불필요?
-                        //pictureStorageDirectory.createNewFile();
-
-                        output = new FileOutputStream(fileItem);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
-
-                        dbHelper.exec("INSERT INTO PICTURE_HISTORY_V5 (" +
-                                "PICTURE_FILE_NAME" +
-                                ", PICTURE_TIME" +
-                                ", ORIGINAL_TEXT, MACHINE_TRANSLATION_RESULT" +
-                                ", HUMAN_TRANSLATION_REQUESTED, HUMAN_TRANSLATION_REQUEST_TIME, HUMAN_TRANSLATION_RESPONSE_TIME, HUMAN_TRANSLATION_RESULT, HUMAN_TRANSLATION_CONFIRMED) " +
-                                "VALUES (" +
-                                "'" + pictureStorageDirectoryPath + "/" + fileItem.getName() + "'" +
-                                ", '" + timeStampString + "'" +
-                                ", '', ''" +
-                                ", '', '', '', '', 'N');");
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    } finally {
-                        if (null != output) {
-                            try {
-                                output.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-
-                    // 사진을 앨범에 저장한다
-                    /*
-                    String outUriStr = MediaStore.Images.Media.insertImage(
-                            getContentResolver(),
-                            bitmap,
-                            fileItem.getName(), "Medical-Lens Image"
-                    );
-
-                    if (outUriStr == null) {
-                        Log.d("WeHealed Capture", "Image insert failed");
-                        return;
-                    }
-                    else {
-                        Uri outUri = Uri.parse(outUriStr);
-                        Log.d(TAG, "TakePicture result : " + outUri);
-                        Toast.makeText(getApplicationContext(),"카메라로 찍은 사진을 앨범에 저장했습니다.",Toast.LENGTH_LONG).show();
-                        sendBroadcast(new Intent(ACTION_MEDIA_SCANNER_SCAN_FILE, outUri));
-                    }
-                    */
-
-                    camera.startPreview();
-                } catch (Exception e) {
-                    Log.e("WeHealed", "Failed to capture the image", e);
-                }
-            }
-        });
-/*
+    private void takePicture(byte[] data, Camera camera) {
         try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
+            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+            Log.d("WeHealed TakePicture", "length = " + data.length);
 
-        // 사진으로부터 텍스트 추출
-        ArrayList<String> list = new ArrayList<String >();
-        SparseArray<TextBlock> items = processor.getItems();
+            long pictureTime = System.currentTimeMillis();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.KOREA);
+            String currentDateTimeString = sdf.format(new Date(pictureTime));
+            String timeStampString = TimeUnit.MILLISECONDS.toSeconds(pictureTime) + "";
 
-        ArrayList<TextData> arrayList = new ArrayList<TextData>();
+            historyId = 0;
+            picturePathAndFileName = "";
+            pictureFileName = "";
 
-        if(items != null) {
-            for (int i = 0; i < items.size(); ++i) {
-                TextBlock item = items.valueAt(i);
-                if (item != null && item.getValue() != null) {
-                    List<? extends Text> texts = item.getComponents();
-                    for (Text line : texts) { // Line 단위
-                        arrayList.add(new TextData(line.getBoundingBox().centerY(), line.getValue()));
+            // 파일을 스마트폰 내장 메모리 -> DCIM/Medical-Lens/ 폴더에 저장한다
+            File externalStorageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+            //File externalStorageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            if (!externalStorageDirectory.exists()) {
+                externalStorageDirectory.mkdirs();
+            }
+
+            String pictureStorageDirectoryPath = externalStorageDirectory.getAbsolutePath() + "/Medical-Lens";
+            File pictureStorageDirectory = new File(pictureStorageDirectoryPath);
+            if (!pictureStorageDirectory.exists()) {
+                pictureStorageDirectory.mkdirs();
+            }
+
+            File fileItem = new File(pictureStorageDirectoryPath, currentDateTimeString + ".jpg");
+
+            Log.d("WeHealed TakePicture", "Filename = " + pictureStorageDirectoryPath + "/" + fileItem.getName() );
+
+            FileOutputStream output = null;
+            try {
+                // 사진을 DCIM 폴더에 저장한다
+
+                // 불필요?
+                //pictureStorageDirectory.createNewFile();
+
+                output = new FileOutputStream(fileItem);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output);
+
+                picturePathAndFileName = pictureStorageDirectoryPath + "/" + fileItem.getName();
+                pictureFileName = fileItem.getName();
+
+                // 사진을 앨범에 저장한다
+//                String outUriStr = MediaStore.Images.Media.insertImage(
+//                        getContentResolver(),
+//                        bitmap,
+//                        fileItem.getName(), "Medical-Lens Image"
+//                );
+//
+//                if (outUriStr == null) {
+//                    Log.d("WeHealed Capture", "Image insert failed");
+//                    return;
+//                }
+//                else {
+//                    Uri outUri = Uri.parse(outUriStr);
+//                    Log.d(TAG, "TakePicture result : " + outUri);
+//                    Toast.makeText(getApplicationContext(),"카메라로 찍은 사진을 앨범에 저장했습니다.",Toast.LENGTH_LONG).show();
+//                    sendBroadcast(new Intent(ACTION_MEDIA_SCANNER_SCAN_FILE, outUri));
+//                }
+
+                // 사진으로부터 텍스트 추출 한다
+                ArrayList<String> list = new ArrayList<String >();
+                SparseArray<TextBlock> items = processor.getItems();
+
+                ArrayList<TextData> arrayList = new ArrayList<TextData>();
+
+                if(items != null) {
+                    for (int i = 0; i < items.size(); ++i) {
+                        TextBlock item = items.valueAt(i);
+                        if (item != null && item.getValue() != null) {
+                            List<? extends Text> texts = item.getComponents();
+                            for (Text line : texts) { // Line 단위
+                                arrayList.add(new TextData(line.getBoundingBox().centerY(), line.getValue()));
 
                         /*
                         for (Text element : line.getComponents()) { // Word 단위
                             arrayList.add(new TextData(element.getBoundingBox().centerY() , element.getValue()));
                         }*/
+                            }
+                            //arrayList.add(new TextData(item.getBoundingBox().centerY(),item.getValue())); // 블럭단위로 가져오기
+                        }
                     }
-                    //arrayList.add(new TextData(item.getBoundingBox().centerY(),item.getValue())); // 블럭단위로 가져오기
+
+                    Collections.sort(arrayList);
+                    for (int i = 0; i < arrayList.size(); ++i) {
+                        list.add(arrayList.get(i).getText());
+                    }
+
+                }
+
+                String originalText = "";
+                // TODO : 추출된 텍스트들을 전처리한다. 일단은 | 로 묶어서 DB에 저장함
+                for (int i = 0; i < list.size(); ++i) {
+                    originalText += list.get(i) + "|";
+                }
+
+                // DB 에 기록한다
+                dbHelper.exec("INSERT INTO PICTURE_HISTORY_V5 (" +
+                        "PICTURE_PATH_AND_FILE_NAME" +
+                        ", PICTURE_FILE_NAME" +
+                        ", PICTURE_TIME" +
+                        ", ORIGINAL_TEXT" +
+                        ", MACHINE_TRANSLATION_RESULT" +
+                        ", HUMAN_TRANSLATION_REQUESTED, HUMAN_TRANSLATION_REQUEST_TIME, HUMAN_TRANSLATION_RESPONSE_TIME, HUMAN_TRANSLATION_RESULT, HUMAN_TRANSLATION_CONFIRMED) " +
+                        "VALUES (" +
+                        "'" + pictureStorageDirectoryPath + "/" + fileItem.getName() + "'" +
+                        ", '" + fileItem.getName() + "'" +
+                        ", '" + timeStampString + "'" +
+                        ", '" + originalText +
+                        "', ''" +
+                        ", '', '', '', '', 'N');");
+
+                Cursor cursor = dbHelper.get("SELECT MAX(HISTORY_ID) FROM PICTURE_HISTORY_V5;");
+                try {
+                    if (cursor.moveToFirst()) {
+                        historyId = cursor.getInt(0);
+
+                        // 번역 화면으로 전환한다
+                        moveToTranslateResultActivity();
+                    }
+                }
+                catch (Exception e) {
+                    Log.i(Constants.LOG_TAG, e.toString());
+                }
+                finally {
+                    try {
+                        cursor.close();
+                    }
+                    catch (Exception ignore) {
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (null != output) {
+                    try {
+                        output.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-
-            Collections.sort(arrayList);
-            for (int i = 0; i < arrayList.size(); ++i) {
-                list.add(arrayList.get(i).getText());
-            }
-
-            Toast.makeText(getApplicationContext(), "파일명1: " + fileName, Toast.LENGTH_LONG).show();
-
-            // 추출된 텍스트들을 전처리
-            Intent intent = new Intent(getApplicationContext(), Activity_30_Translate_Result.class);
-            intent.putExtra("items", list);
-            intent.putExtra("name", fileName);
-            startActivity(intent);
-            finish();
+        } catch (Exception e) {
+            Log.e("WeHealed", "Failed to capture the image", e);
         }
+    }
+
+    private void moveToTranslateResultActivity() {
+        // 번역 Activity 실행한다
+        Intent intent = new Intent(getApplicationContext(), Activity_30_Translate_Result.class);
+        intent.putExtra("historyId", historyId);
+        startActivity(intent);
+        finish();
+
+    }
+
+    private void onTakePictureButtonClick() {
+
+        // 카메라 사진 촬영 이미지 저장
+        cameraSource.takePicture(null, new com.example.wehealed.medical_lens.CameraSource.PictureCallback(){
+            public void onPictureTaken(byte[] data, Camera camera) {
+                takePicture(data, camera);
+
+                camera.startPreview();
+            }
+        });
+
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
     /**

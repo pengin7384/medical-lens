@@ -88,13 +88,6 @@
                 android:layout_height="wrap_content"
                 android:text="@string/translatation_history"
                 android:textSize="18sp" />
-            <Button
-                android:id="@+id/button_compare"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="비교"
-                />
 
             <ListView
                 android:id="@+id/history_listview"
