@@ -11,6 +11,10 @@
 
 * https://developers.google.com/vision/android/text-overview
 
+## Google Cloud Natural Language API
+
+* https://cloud.google.com/natural-language/
+
 ## Scanner
 
 * https://github.com/jhansireddy/AndroidScannerDemo

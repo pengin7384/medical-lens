@@ -50,7 +50,12 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
         ListView listView = (ListView)findViewById(R.id.listView1);
         listView.setAdapter(adapter);
 
-        index();
+        String text = "";
+        for(int i=0; i<list.size(); i++) {
+            text = text + list.get(i) + "\n";
+        }
+
+        index(text);
 
         findViewById(R.id.button_go_human_translation_request_activity).setOnClickListener(mClickListener);
     }
@@ -67,7 +72,7 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
     }
 
     // 서버 통신
-    public void index() {
+    public void index(String text) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -75,7 +80,7 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 
         RetrofitService retrofitService = retrofit.create(RetrofitService.class);
         //Call<TextItem> call = retrofitService.getIndex("mos");
-        Call<TextItem> call = retrofitService.getIndex("asdf");
+        Call<TextItem> call = retrofitService.getIndex(text);
         call.enqueue(new Callback<TextItem>() {
             @Override
             public void onResponse(Call<TextItem> call, Response<TextItem> response) {
