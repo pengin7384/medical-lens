@@ -2,25 +2,22 @@ package com.example.wehealed.medical_lens;
 
 public class HistoryItem {
 
-    int historyId = 0;
-    String pictureFileName = "";
-    int pictureTime = 0;
-    String originalText = "";
-    String machineTranslationResult = "";
-    String humanTranslationRequested = "";
-    int humanTranslationRequestTime = 0;
-    int humanTranslationResponseTime = 0;
-    String humanTranslationResult = "";
-    String humanTranslationConfirmed = "";
-    String summaryText = "";
+    protected int historyId = 0;
+    protected String pictureFileName = "";
+    protected String picturePathAndFileName = "";
+    protected int pictureTime = 0;
+    protected String originalText = "";
+    protected String machineTranslationResult = "";
+    protected String humanTranslationRequested = "";
+    protected int humanTranslationRequestTime = 0;
+    protected int humanTranslationResponseTime = 0;
+    protected String humanTranslationResult = "";
+    protected String humanTranslationConfirmed = "";
+    protected String summaryText = "";
 
-    public HistoryItem(int historyId, String pictureFileName) {
+    public HistoryItem(int historyId, String picturePathAndFileName, String pictureFileName, int pictureTime, String summaryText) {
         this.historyId = historyId;
-        this.pictureFileName = pictureFileName;
-    }
-
-    public HistoryItem(int historyId, String pictureFileName, int pictureTime, String summaryText) {
-        this.historyId = historyId;
+        this.picturePathAndFileName = picturePathAndFileName;
         this.pictureFileName = pictureFileName;
         this.pictureTime = pictureTime;
         this.summaryText = summaryText;
@@ -32,6 +29,14 @@ public class HistoryItem {
 
     public void setHistoryId(int historyId) {
         this.historyId = historyId;
+    }
+
+    public String getPicturePathAndFileName() {
+        return picturePathAndFileName;
+    }
+
+    public void setPicturePathAndFileName(String picturePathAndFileName) {
+        this.picturePathAndFileName = picturePathAndFileName;
     }
 
     public String getPictureFileName() {
