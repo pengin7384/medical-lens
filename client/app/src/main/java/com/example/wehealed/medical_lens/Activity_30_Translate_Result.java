@@ -140,7 +140,7 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                 if(repo != null) {
                     Log.d("WeHealed Response",repo.getPicture_file_name());
                     Log.d("WeHealed Response",repo.getSentences()[0].getOriginal_sentence());
-
+                    Log.d("WeHealed Response",repo.getDescribing_urls()[0].getKey() + "  :  " + repo.getDescribing_urls()[0].getUrl());
 
                 }
             }
