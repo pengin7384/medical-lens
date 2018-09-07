@@ -49,32 +49,10 @@
 
             <com.example.wehealed.medical_lens.GraphicOverlay
                 android:id="@+id/graphicOverlay"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
 
         </com.example.wehealed.medical_lens.CameraSourcePreview>
-
-        <FrameLayout
-            android:id="@+id/textPreviewFrame"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            tools:layout_editor_absoluteX="0dp">
-
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:focusable="false"
-                    android:text="having samhaving same issue like you and it is solved now. android - extract text from the area inside drew rectangle on ...	2018년 5월 21일 qr code - In Android portrait mode google vision Camera Source ...	2018년 3월 27일 android - Google Vision API CameraSourcePreview FPS	2018년 2월 4일 android - inflate error google mobile vision	2017년 12월 11일 stackoverflow.com 검색결과 더보기having same issue like you and it is solved now. android - extract text from the area inside drew rectangle on ...	2018년 5월 21일 qr code - In Android portrait mode google vision Camera Source ...	2018년 3월 27일 android - Google Vision API CameraSourcePreview FPS	2018년 2월 4일 android - inflate error google mobile vision	2017년 12월 11일 stackoverflow.com 검색결과 더보기" />
-            </ScrollView>
-
-        </FrameLayout>
 
     </android.support.constraint.ConstraintLayout>
 

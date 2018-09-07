@@ -49,6 +49,8 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -60,6 +62,7 @@ import com.google.android.gms.vision.text.TextRecognizer;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,6 +70,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Url;
 
 /**
  * Activity for the Ocr Detecting app.  This app detects text and displays the value with the
@@ -106,7 +116,6 @@ public final class Activity_20_Camera extends AppCompatActivity {
     private Button btnCapture;
     private OcrDetectorProcessor processor;
     private String fileName="";
-
 
     /**
      * Initializes the UI and creates the detector pipeline.
@@ -157,10 +166,7 @@ public final class Activity_20_Camera extends AppCompatActivity {
 
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
-
-        // TODO: Set up the Text To Speech engine.
     }
-
 
     // Button Event
     Button.OnClickListener mClickListener = new View.OnClickListener() {
@@ -169,7 +175,6 @@ public final class Activity_20_Camera extends AppCompatActivity {
                 case R.id.button_main_capture:  // 캡처 버튼
                     onTakePictureButtonClick();
                     break;
-
             }
         }
     };
@@ -284,21 +289,28 @@ public final class Activity_20_Camera extends AppCompatActivity {
                     originalText += list.get(i) + "|";
                 }
 
+                originalText.replaceAll("'", "")
+
                 // DB 에 기록한다
+
                 dbHelper.exec("INSERT INTO PICTURE_HISTORY_V5 (" +
                         "PICTURE_PATH_AND_FILE_NAME" +
                         ", PICTURE_FILE_NAME" +
                         ", PICTURE_TIME" +
                         ", ORIGINAL_TEXT" +
                         ", MACHINE_TRANSLATION_RESULT" +
-                        ", HUMAN_TRANSLATION_REQUESTED, HUMAN_TRANSLATION_REQUEST_TIME, HUMAN_TRANSLATION_RESPONSE_TIME, HUMAN_TRANSLATION_RESULT, HUMAN_TRANSLATION_CONFIRMED) " +
+                        ", HUMAN_TRANSLATION_REQUESTED, HUMAN_TRANSLATION_REQUEST_TIME, HUMAN_TRANSLATION_RESPONSE_TIME, HUMAN_TRANSLATION_RESULT, HUMAN_TRANSLATION_CONFIRMED" +
+                        ", SUMMARY_TEXT, SUMMARY_SENTENCE_NUMBER " +
+                        ") " +
                         "VALUES (" +
                         "'" + pictureStorageDirectoryPath + "/" + fileItem.getName() + "'" +
                         ", '" + fileItem.getName() + "'" +
                         ", '" + timeStampString + "'" +
-                        ", '" + originalText +
-                        "', ''" +
-                        ", '', '', '', '', 'N');");
+                        ", '" + originalText + "'" +
+                        ", ''" +
+                        ", '', '', '', '', 'N'" +
+                        ", '', 0" +
+                        ");");
 
                 Cursor cursor = dbHelper.get("SELECT MAX(HISTORY_ID) FROM PICTURE_HISTORY_V5;");
                 try {
@@ -320,31 +332,22 @@ public final class Activity_20_Camera extends AppCompatActivity {
                     }
                 }
             } catch (Exception e) {
+                Log.i(Constants.LOG_TAG, e.toString());
                 e.printStackTrace();
             } finally {
                 if (null != output) {
                     try {
                         output.close();
                     } catch (IOException e) {
+                        Log.i(Constants.LOG_TAG, e.toString());
                         e.printStackTrace();
                     }
                 }
             }
-            /*
-<<<<<<< HEAD
-        });
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-=======*/
         } catch (Exception e) {
             Log.e("WeHealed", "Failed to capture the image", e);
         }
     }
-//>>>>>>> 26f9875050ecb57f1d00ce9e4a184917c07e3b42
 
     private void moveToTranslateResultActivity() {
         // 번역 Activity 실행한다
@@ -357,7 +360,6 @@ public final class Activity_20_Camera extends AppCompatActivity {
     }
 
     private void onTakePictureButtonClick() {
-
         // 카메라 사진 촬영 이미지 저장
         cameraSource.takePicture(null, new com.example.wehealed.medical_lens.CameraSource.PictureCallback(){
             public void onPictureTaken(byte[] data, Camera camera) {
@@ -366,12 +368,6 @@ public final class Activity_20_Camera extends AppCompatActivity {
                 camera.startPreview();
             }
         });
-
-//        try {
-//            Thread.sleep(2000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
     }
 
     /**

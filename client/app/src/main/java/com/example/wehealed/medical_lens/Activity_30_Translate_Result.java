@@ -14,20 +14,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.vision.text.Text;
+import com.google.android.gms.vision.text.TextBlock;
 import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import retrofit2.Call;
@@ -66,7 +72,8 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
     ListView translationResultListView;
     ArrayAdapter translationResultListViewAdapter;
 
-//    PhotoView photoView;
+    TextView textView;
+    CustomView customView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,8 +112,17 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
         findViewById(R.id.button_go_human_translation_request_activity).setOnClickListener(mClickListener);
         findViewById(R.id.button_translation_warning).setOnClickListener(mClickListener);
         findViewById(R.id.button_request_again).setOnClickListener(mClickListener);
+        findViewById(R.id.buttonForTree).setOnClickListener(mClickListener2);
 
         buttonRequestAgain = (Button)findViewById(R.id.button_request_again);
+
+        HorizontalScrollView vv = (HorizontalScrollView)findViewById(R.id.horizontalScrollView);
+        //vv.requestDisallowInterceptTouchEvent(true);
+        //vv.addView(customView);
+        //customView.getParent().requestDisallowInterceptTouchEvent(true);
+        customView = (CustomView) findViewById(R.id.customView);
+
+        // TODO: Set up the Text To Speech engine.
 
         initialize();
     }
@@ -392,6 +408,47 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                 .setMessage(R.string.translation_warning_detail)
                 .setPositiveButton(R.string.ok, listener)
                 .show();
+    }
+
+    Button.OnClickListener mClickListener2 = new View.OnClickListener() {
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.buttonForTree:
+                    sendAndReceiveToken("I am a boy");
+                    break;
+            }
+        }
+    };
+
+    public void sendAndReceiveToken(final String text) {
+        String URL = "https://wehealedapi2.run.goorm.io/api/";
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        RetrofitService retrofitService = retrofit.create(RetrofitService.class);
+
+        Call<TokenResponseJSON> call = retrofitService.getJSON(text);
+        call.enqueue(new Callback<TokenResponseJSON>() {
+            @Override
+            public void onResponse(Call<TokenResponseJSON> call, Response<TokenResponseJSON> response) {
+                TokenResponseJSON repo = response.body();
+                //Log.d("WeHealed", String.valueOf(repo.tokens[0].getText().getContent()));
+                Token[] tl = repo.getTokens();
+                //textView.setText(tl[0].getText().getContent());
+                Toast.makeText(getApplicationContext(),String.valueOf(tl.length),Toast.LENGTH_LONG).show();
+
+                customView.drawTree(repo);
+            }
+
+            @Override
+            public void onFailure(Call<TokenResponseJSON> call, Throwable t) {
+                Log.d("WeHealed", "Token Failure");
+                Toast.makeText(getApplicationContext(), "Token Failure", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 

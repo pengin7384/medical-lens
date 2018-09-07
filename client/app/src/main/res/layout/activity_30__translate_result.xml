@@ -90,5 +90,61 @@
 
     </ListView>
 
+    <HorizontalScrollView
+        android:id="@+id/horizontalScrollView"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="164dp"
+        android:background="@color/blue"
+        android:fillViewport="true"
+        android:scrollbars="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.882"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/toolbar_translate_result">
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/scene_container"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <com.example.wehealed.medical_lens.CustomView
+                android:id="@+id/customView"
+                android:layout_width="2000dp"
+                android:layout_height="match_parent"
+                android:focusable="false" />
+        </RelativeLayout>
+
+    </HorizontalScrollView>
+
+    <Button
+        android:id="@+id/buttonForTree"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="280dp"
+        android:layout_marginTop="80dp"
+        android:text="Tree"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <!--
+            <HorizontalScrollView
+                android:id="@+id/horizontalScrollView"
+                android:layout_width="fill_parent"
+                android:layout_height="300dp"
+                android:fillViewport="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@color/blue">
+
+                <com.example.wehealed.medical_lens.CustomView
+                    android:id="@+id/customView"
+                    android:layout_width="2000dp"
+                    android:layout_height="fill_parent"
+                    />
+            </HorizontalScrollView>-->
+
 
 </android.support.constraint.ConstraintLayout>

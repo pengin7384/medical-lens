@@ -15,7 +15,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String CLASSNAME = DBHelper.class.getSimpleName();
 
     private static final String DB_NAME = "WeHealed_Medical_Lens.db";
-    private static final int DB_VERSION = 9;
+    private static final int DB_VERSION = 10;
 
     public static String myEmailAddress = "";
     public static String myName = "";
