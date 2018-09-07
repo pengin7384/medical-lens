@@ -1,10 +1,13 @@
 package com.example.wehealed.medical_lens;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +22,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
@@ -30,7 +35,6 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Activity_30_Translate_Result extends AppCompatActivity {
-    static final String URL = "https://wehealedapi2.run.goorm.io/api/";
 
     //private SparseArray<TextBlock> items;
 
@@ -45,8 +49,11 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 
 
     ImageView pictureImageView;
-    TextView machineTranslateResultTextView;
-    TextView pictureFileNameTextView;
+//    TextView machineTranslateResultTextView;
+//    TextView pictureFileNameTextView;
+
+//    ListView originalTextListView;
+//    ArrayAdapter originalTextListViewAdapter;
 
     ListView translationResultListView;
     ArrayAdapter translationResultListViewAdapter;
@@ -72,8 +79,12 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true); // 뒤로가기 버튼
 
         pictureImageView = (ImageView)findViewById(R.id.imageView_picture);
-        machineTranslateResultTextView = (TextView) findViewById(R.id.machine_translation_response);
-        pictureFileNameTextView = (TextView) findViewById(R.id.textView_picture_file_name);
+//        machineTranslateResultTextView = (TextView) findViewById(R.id.machine_translation_response);
+//        pictureFileNameTextView = (TextView) findViewById(R.id.textView_picture_file_name);
+
+//        originalTextListView = (ListView)findViewById(R.id.listView_original_text);
+//        originalTextListViewAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
+//        originalTextListView.setAdapter(originalTextListViewAdapter);
 
         translationResultListView = (ListView)findViewById(R.id.listView_translation_result);
         translationResultListViewAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
@@ -124,27 +135,37 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
         // 클라이언트 DB 데이터 -> 사진 파일 로딩
         File imgFile = new  File(picturePathAndFileName);
         if(imgFile.exists()){
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-            pictureImageView.setImageBitmap(myBitmap);
+            Bitmap originalBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+
+            Matrix matrix = new Matrix();
+            matrix.postRotate(90);
+            Bitmap rotatedBitmap = Bitmap.createBitmap(originalBitmap, 0,0, originalBitmap.getWidth(), originalBitmap.getHeight(), matrix, true);
+
+            pictureImageView.setImageBitmap(rotatedBitmap);
         }
 
         // 클라이언트 DB 데이터 -> 사진 파일이름 표시
-        pictureFileNameTextView.setText(pictureFileName);
+//        pictureFileNameTextView.setText(pictureFileName);
+
 
         // 클라이언트 DB 데이터 -> originalText 표시
-        translationResultListViewAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
         ArrayList<String> arrayList = new ArrayList<String>();
         StringTokenizer st = new StringTokenizer(originalText, "|");
         while (st.hasMoreTokens()) {
             String sentence = st.nextToken();
             arrayList.add(sentence);
         }
+//        originalTextListViewAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
+//        originalTextListViewAdapter.addAll(arrayList);
+//        originalTextListView.setAdapter(originalTextListViewAdapter);
+
+        translationResultListViewAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
         translationResultListViewAdapter.addAll(arrayList);
-        translationResultListView.setAdapter(translationResultListViewAdapter);
+        translationResultListView.setAdapter(translationResultListViewAdapter );
 
         Sentence[] sentences = new Sentence[arrayList.size()];
         for(int i=0; i<arrayList.size(); i++) {
-            Sentence s = new Sentence(i+1,arrayList.get(i),"");
+            Sentence s = new Sentence(i+1, arrayList.get(i),"");
             sentences[i] = s;
         }
         sendAndReceiveMachineTranslationResult(sentences);
@@ -194,7 +215,7 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
     // Post + Json 방식
     public void sendAndReceiveMachineTranslationResult(Sentence[] sentences) {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(URL)
+                .baseUrl(RetrofitService.requestBaseURL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -204,7 +225,9 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
         for(int i=0; i<requestJSON.getSentences().length; i++) {
             Log.d("WeHealed JSON", requestJSON.getSentences()[i].getOriginal_sentence());
         }*/
-        Call<MachineTranslationResponseJSON> call = retrofitService.getJSON(requestJSON);
+
+        // TODO : 최신버전의 서버 API 를 호출한다
+        Call<MachineTranslationResponseJSON> call = retrofitService.getJSON_V2(requestJSON);
         call.enqueue(new Callback<MachineTranslationResponseJSON>() {
             @Override
             public void onResponse(Call<MachineTranslationResponseJSON> call, Response<MachineTranslationResponseJSON> response) {
@@ -223,18 +246,35 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
     // 서버로부터 번역 결과를 받아 처리한다
     protected void processResponse(MachineTranslationResponseJSON responseJSON) {
 
-        String machineTranslateResponse = "";
+        String responseSentences = "";
+        String originalSentences = "";
+        String translatedSentences = "";
 
         if(responseJSON != null) {
 
-            // TODO : 서버 수신 데이터 -> DB 에 기록한다
-            machineTranslateResponse = responseJSON.getPicture_file_name();
+            // 서버 수신 데이터 -> DB 에 기록한다
+            String responsePictureFileName = responseJSON.getPicture_file_name();
+            String responseTime = responseJSON.getResponse_time();
+            String responseSummary = responseJSON.getSummary();
+            Sentence[] sentences = responseJSON.getSentences();
+            for(int i=0; i<sentences.length; i++) {
+                responseSentences += sentences[i].getSentence_number() + "|";
+
+                responseSentences += sentences[i].getOriginal_sentence() + "|";
+                originalSentences += sentences[i].getOriginal_sentence() + "\n";
+
+                responseSentences += sentences[i].getTranslated_sentence() + "`";
+                translatedSentences += sentences[i].getTranslated_sentence() + "\n";
+            }
+
             try {
                 dbHelper.exec("UPDATE PICTURE_HISTORY_V5 SET " +
-                        "MACHINE_TRANSLATION_RESULT = '" + machineTranslateResponse + "' " +
+                        "MACHINE_TRANSLATION_RESULT = '" + responseSentences + "' " +
                         "WHERE HISTORY_ID = '" + historyId + "';");
 
-                Log.d("WeHealed Response", "Machine Translation Result Saved :" + machineTranslateResponse);
+                Log.d("WeHealed Response", "Machine Translation HistoryId " + historyId);
+                Log.d("WeHealed Response", "originalSentences : " + originalSentences);
+                Log.d("WeHealed Response", "translatedSentences : " + translatedSentences);
                 Log.d("WeHealed Response", responseJSON.getSentences()[0].getOriginal_sentence());
                 Log.d("WeHealed Response",responseJSON.getDescribing_urls()[0].getKey() + "  :  " + responseJSON.getDescribing_urls()[0].getUrl());
             } catch (Exception e) {
@@ -243,20 +283,21 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                 Log.d("WeHealed", "Machine Translation Result Save Failed");
             }
 
-            // 서버 수신 데이터 -> 임시로 원본 표시
-            Log.d("WeHealed Response",responseJSON.toString());
-            //machineTranslateResultTextView.setText(responseJSON.getPicture_file_name());
-            machineTranslateResultTextView.setText(responseJSON.toString());
+            // 서버 수신 데이터 -> 원본 표시
+//            originalTextListViewAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
+//            for(int i=0; i<sentences.length; i++) {
+//                String sentence = new String();
+//                sentence += sentences[i].getOriginal_sentence() + "\n";
+//                originalTextListViewAdapter.add(sentence);
+//            }
+//            originalTextListView.setAdapter(originalTextListViewAdapter);
 
-            // TODO : 서버 수신 데이터 -> 파싱해서 표시
-            String machineTranslateResponseSentences = "안녕|세계";
+            // 서버 수신 데이터 -> 결과 표시
             translationResultListViewAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
-
-            ArrayList<String> arrayList = new ArrayList<String>();
-            StringTokenizer st = new StringTokenizer(machineTranslateResponseSentences, "|");
-            while (st.hasMoreTokens()) {
-                String sentence = st.nextToken();
-                arrayList.add(sentence);
+            for(int i=0; i<sentences.length; i++) {
+                String sentence = new String();
+                sentence += sentences[i].getOriginal_sentence() + "\n";
+                sentence += sentences[i].getTranslated_sentence() + "";
                 translationResultListViewAdapter.add(sentence);
             }
             translationResultListView.setAdapter(translationResultListViewAdapter);
@@ -272,6 +313,18 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                     intent.putExtra("picturePathAndFileName", picturePathAndFileName);
                     intent.putExtra("pictureFileName", pictureFileName);
                     startActivity(intent);
+                    break;
+                case R.id.button_translation_warning :
+                    DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            finish();
+                        }
+                    };
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+                    builder.setTitle("Warning")
+                            .setMessage(R.string.translation_warning_detail)
+                            .setPositiveButton(R.string.ok, listener)
+                            .show();
                     break;
             }
         }

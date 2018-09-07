@@ -22,6 +22,18 @@
             android:title="환경설정" />
     </group>
 
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_share"
+            android:icon="@drawable/ic_menu_share"
+            android:title="친구에게 알리기" />
+        <item
+            android:id="@+id/nav_send"
+            android:icon="@drawable/ic_menu_send"
+            android:title="앱 추천하기" />
+    </group>
+
+    <!--
     <item android:title="Communicate">
         <menu>
             <item
@@ -34,5 +46,5 @@
                 android:title="앱 추천하기" />
         </menu>
     </item>
-
+    -->
 </menu>

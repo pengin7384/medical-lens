@@ -38,10 +38,24 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <ListView
+        android:id="@+id/listView_translation_result"
+        android:layout_width="368dp"
+        android:layout_height="141dp"
+        android:layout_marginBottom="52dp"
+        android:layout_marginStart="8dp"
+        android:choiceMode="singleChoice"
+        android:divider="#ffcc22"
+        android:dividerHeight="1.5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+    </ListView>
+
     <ScrollView
         android:id="@+id/scrollView3"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="126dp"
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -51,7 +65,7 @@
         <ImageView
             android:id="@+id/imageView_picture"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="100dp"
             android:layout_gravity="top|center_horizontal"
             android:contentDescription="imageForTranslation"
             android:scrollbarAlwaysDrawHorizontalTrack="false"
@@ -64,21 +78,14 @@
     </ScrollView>
 
     <ListView
-        android:id="@+id/listView_translation_result"
-        android:layout_width="match_parent"
-        android:layout_height="234dp"
-        android:layout_marginBottom="60dp"
+        android:id="@+id/listView_original_text"
+        android:layout_width="368dp"
+        android:layout_height="146dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
-        android:choiceMode="singleChoice"
-        android:divider="#ffcc22"
-        android:dividerHeight="1.5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scrollView3">
-
-    </ListView>
+        app:layout_constraintBottom_toTopOf="@+id/listView_translation_result"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView3"
+        tools:layout_editor_absoluteX="8dp" />
 
 
 </android.support.constraint.ConstraintLayout>

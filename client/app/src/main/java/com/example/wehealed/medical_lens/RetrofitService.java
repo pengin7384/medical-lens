@@ -8,6 +8,10 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface RetrofitService {
+
+    // 서버 URL
+    public static final String requestBaseURL = "https://wehealedapi.run.goorm.io/api/";
+
     @GET("test/")
     Call<TextItem> getIndex(
             @Query("text") String text
@@ -16,6 +20,14 @@ public interface RetrofitService {
     //@FormUrlEncoded
     @POST("request_translate/")
     Call<MachineTranslationResponseJSON> getJSON(@Body MachineTranslationRequestJSON machineTranslationRequestJSON);
+
+    //@FormUrlEncoded
+    @POST("request_translate_test/")
+    Call<MachineTranslationResponseJSON> getJSON_Test(@Body MachineTranslationRequestJSON machineTranslationRequestJSON);
+
+    //@FormUrlEncoded
+    @POST("request_translate_v2/")
+    Call<MachineTranslationResponseJSON> getJSON_V2(@Body MachineTranslationRequestJSON machineTranslationRequestJSON);
 
     /*
     @FormUrlEncoded

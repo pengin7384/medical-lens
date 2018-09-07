@@ -1,7 +1,9 @@
 package com.example.wehealed.medical_lens;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -76,6 +78,7 @@ public class Activity_10_Home extends AppCompatActivity
 
         findViewById(R.id.button_camera).setOnClickListener(mClickListener);
         findViewById(R.id.button_gallery).setOnClickListener(mClickListener);
+        findViewById(R.id.button_clear_history).setOnClickListener(mClickListener);
 
         historyListView = (ListView) findViewById(R.id.history_listview);
         historyListAdapter = new HistoryListAdapter(this); // android.R.layout.simple_list_item_multiple_choice
@@ -209,11 +212,44 @@ public class Activity_10_Home extends AppCompatActivity
                 case R.id.button_gallery:
                     requestRead();
                     break;
+                case R.id.button_clear_history:
+                    clearHistory();
+                    break;
             }
 
         }
     };
 
+    public void clearHistory() {
+
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+//        builder.setTitle("Clear History")
+//                .setMessage(R.string.clear_history_confirm)
+//                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        clearHistory();
+//                        Toast.makeText(getApplicationContext(),"삭제했습니다",Toast.LENGTH_LONG).show();
+//                    }
+//                })
+//                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int which) {
+//                    }
+//                })
+//                .show();
+
+        try {
+            dbHelper.get("DELETE FROM PICTURE_HISTORY_V5");
+
+            Log.i(Constants.LOG_TAG, "DELETE FROM PICTURE_HISTORY_V5");
+
+            historyListAdapter.clear();
+//            historyListAdapter = new HistoryListAdapter(this); // android.R.layout.simple_list_item_multiple_choice
+//            historyListView.setAdapter(historyListAdapter);
+        }
+        catch (Exception e) {
+            Log.i(Constants.LOG_TAG, e.toString());
+        }
+    }
 
     public void requestRead() {
         if (ContextCompat.checkSelfPermission(this,
@@ -262,7 +298,8 @@ public class Activity_10_Home extends AppCompatActivity
 
         @Override
         public int getCount() {
-            return items.size();
+            return Math.max(items.size(), 10);
+            //return items.size();
         }
 
         public void clear() {
@@ -298,7 +335,7 @@ public class Activity_10_Home extends AppCompatActivity
                     items.get(position).getPicturePathAndFileName(),
                     items.get(position).getPictureFileName(),
                     items.get(position).getPictureTime());
-
+            itemView.setSummary(items.get(position).getSummaryText());
             return itemView;
         }
     }

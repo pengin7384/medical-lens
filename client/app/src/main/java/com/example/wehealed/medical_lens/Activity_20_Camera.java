@@ -184,7 +184,7 @@ public final class Activity_20_Camera extends AppCompatActivity {
             Log.d("WeHealed TakePicture", "length = " + data.length);
 
             long pictureTime = System.currentTimeMillis();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.KOREA);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.KOREA);
             String currentDateTimeString = sdf.format(new Date(pictureTime));
             String timeStampString = TimeUnit.MILLISECONDS.toSeconds(pictureTime) + "";
 
@@ -632,7 +632,7 @@ public final class Activity_20_Camera extends AppCompatActivity {
      * @return a {@link String} representing a time.
      */
     private static String generateTimestamp() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.KOREA);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.KOREA);
         return sdf.format(new Date());
     }
 
