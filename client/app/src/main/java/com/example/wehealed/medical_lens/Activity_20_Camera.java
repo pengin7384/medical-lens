@@ -47,6 +47,8 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -58,6 +60,7 @@ import com.google.android.gms.vision.text.TextRecognizer;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,6 +68,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Url;
 
 /**
  * Activity for the Ocr Detecting app.  This app detects text and displays the value with the
@@ -105,6 +115,8 @@ public final class Activity_20_Camera extends AppCompatActivity {
     private OcrDetectorProcessor processor;
     private String fileName="";
 
+    TextView textView;
+    CustomView customView;
 
     /**
      * Initializes the UI and creates the detector pipeline.
@@ -113,7 +125,10 @@ public final class Activity_20_Camera extends AppCompatActivity {
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+
         setContentView(R.layout.activity_20__camera);
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_camera);
         setSupportActionBar(toolbar);
@@ -134,6 +149,8 @@ public final class Activity_20_Camera extends AppCompatActivity {
         btnCapture = findViewById(R.id.button_main_capture);
         btnCapture.setOnClickListener(mClickListener);
 
+        textView = (TextView) findViewById(R.id.textView222);
+        textView.setOnClickListener(mClickListener2);
 
         // Set good defaults for capturing text.
         boolean autoFocus = true;
@@ -150,6 +167,14 @@ public final class Activity_20_Camera extends AppCompatActivity {
 
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
+        customView = (CustomView)findViewById(R.id.customView);
+
+        HorizontalScrollView vv = (HorizontalScrollView)findViewById(R.id.horizontalScrollView);
+        //vv.requestDisallowInterceptTouchEvent(true);
+        //vv.addView(customView);
+        //customView.getParent().requestDisallowInterceptTouchEvent(true);
+
+
 
         // TODO: Set up the Text To Speech engine.
     }
@@ -166,6 +191,70 @@ public final class Activity_20_Camera extends AppCompatActivity {
             }
         }
     };
+
+    TextView.OnClickListener mClickListener2 = new View.OnClickListener() {
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.textView222:
+                    //Toast.makeText(getApplicationContext(),"sss",Toast.LENGTH_LONG).show();
+                    SparseArray<TextBlock> items = processor.getItems();
+
+                    ArrayList<TextData> arrayList = new ArrayList<TextData>();
+
+                    if(items != null) {
+                        for (int i = 0; i < items.size(); ++i) {
+                            TextBlock item = items.valueAt(i);
+                            if (item != null && item.getValue() != null) {
+                                List<? extends Text> texts = item.getComponents();
+                                for (Text line : texts) { // Line 단위
+                                    arrayList.add(new TextData(line.getBoundingBox().centerY(), line.getValue()));
+                                }
+                            }
+                        }
+
+                        Collections.sort(arrayList);
+                    }
+                    String str = arrayList.get(0).getText();
+                    //Toast.makeText(getApplicationContext(),str,Toast.LENGTH_LONG).show();
+                    //textView.setText(str);
+                    sendAndReceiveToken(str);
+
+            }
+
+        }
+    };
+
+    public void sendAndReceiveToken(final String text) {
+        String URL = "https://wehealedapi2.run.goorm.io/api/";
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        RetrofitService retrofitService = retrofit.create(RetrofitService.class);
+
+        Call<TokenResponseJSON> call = retrofitService.getJSON(text);
+        call.enqueue(new Callback<TokenResponseJSON>() {
+            @Override
+            public void onResponse(Call<TokenResponseJSON> call, Response<TokenResponseJSON> response) {
+                TokenResponseJSON repo = response.body();
+                //Log.d("WeHealed", String.valueOf(repo.tokens[0].getText().getContent()));
+                Token[] tl = repo.getTokens();
+                //textView.setText(tl[0].getText().getContent());
+                Toast.makeText(getApplicationContext(),String.valueOf(tl.length),Toast.LENGTH_LONG).show();
+
+                customView.drawTree(repo);
+        }
+
+            @Override
+            public void onFailure(Call<TokenResponseJSON> call, Throwable t) {
+                Log.d("WeHealed", "Token Failure");
+                Toast.makeText(getApplicationContext(), "Token Failure", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

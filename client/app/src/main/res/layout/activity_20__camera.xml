@@ -45,10 +45,52 @@
 
             <com.example.wehealed.medical_lens.GraphicOverlay
                 android:id="@+id/graphicOverlay"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
 
         </com.example.wehealed.medical_lens.CameraSourcePreview>
+
+        <HorizontalScrollView
+            android:id="@+id/horizontalScrollView"
+            android:layout_width="fill_parent"
+            android:layout_height="300dp"
+            android:fillViewport="true"
+            android:scrollbars="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@color/blue">
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/scene_container"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <com.example.wehealed.medical_lens.CustomView
+                    android:id="@+id/customView"
+                    android:layout_width="2000dp"
+                    android:layout_height="match_parent"
+                    android:focusable="false"
+                    />
+            </RelativeLayout>
+
+        </HorizontalScrollView>
+
+
+<!--
+        <HorizontalScrollView
+            android:id="@+id/horizontalScrollView"
+            android:layout_width="fill_parent"
+            android:layout_height="300dp"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@color/blue">
+
+            <com.example.wehealed.medical_lens.CustomView
+                android:id="@+id/customView"
+                android:layout_width="2000dp"
+                android:layout_height="fill_parent"
+                />
+        </HorizontalScrollView>-->
+
+
 
         <FrameLayout
             android:id="@+id/textPreviewFrame"
@@ -58,16 +100,20 @@
             app:layout_constraintBottom_toBottomOf="parent"
             tools:layout_editor_absoluteX="0dp">
 
+
             <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginBottom="0dp"
+                >
+
 
                 <TextView
-                    android:id="@+id/textView2"
+                    android:id="@+id/textView222"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="10dp"
                     android:focusable="false"
-                    android:text="having samhaving same issue like you and it is solved now. android - extract text from the area inside drew rectangle on ...	2018년 5월 21일 qr code - In Android portrait mode google vision Camera Source ...	2018년 3월 27일 android - Google Vision API CameraSourcePreview FPS	2018년 2월 4일 android - inflate error google mobile vision	2017년 12월 11일 stackoverflow.com 검색결과 더보기having same issue like you and it is solved now. android - extract text from the area inside drew rectangle on ...	2018년 5월 21일 qr code - In Android portrait mode google vision Camera Source ...	2018년 3월 27일 android - Google Vision API CameraSourcePreview FPS	2018년 2월 4일 android - inflate error google mobile vision	2017년 12월 11일 stackoverflow.com 검색결과 더보기" />
+                    android:text="sdsdsdsds" />
             </ScrollView>
 
         </FrameLayout>

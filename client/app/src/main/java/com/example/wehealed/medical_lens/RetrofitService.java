@@ -13,8 +13,13 @@ public interface RetrofitService {
             @Query("text") String text
     );
 
+    @GET("token/")
+    Call<TokenResponseJSON> getJSON(
+            @Query("text") String text
+    );
+
     //@FormUrlEncoded
-    @POST("request_translate_test/")
+    @POST("request_translate_v5/")
     Call<MachineTranslationResponseJSON> getJSON(@Body MachineTranslationRequestJSON machineTranslationRequestJSON);
 
     /*
