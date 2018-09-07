@@ -42,6 +42,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="16dp"
         android:text="@string/translation_warning"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -100,6 +101,7 @@
         android:background="@color/blue"
         android:fillViewport="true"
         android:scrollbars="horizontal"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.882"
         app:layout_constraintStart_toStartOf="parent"
@@ -126,6 +128,7 @@
         android:layout_marginStart="280dp"
         android:layout_marginTop="80dp"
         android:text="Tree"
+        android:visibility="invisible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

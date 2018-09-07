@@ -1,6 +1,7 @@
 package com.example.wehealed.medical_lens;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -8,17 +9,16 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.RectF;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.util.Linkify;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
@@ -26,22 +26,21 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.vision.text.Text;
-import com.google.android.gms.vision.text.TextBlock;
-import com.google.gson.Gson;
-
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class Activity_30_Translate_Result extends AppCompatActivity {
@@ -69,8 +68,8 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 //    ListView originalTextListView;
 //    ArrayAdapter originalTextListViewAdapter;
 
-    ListView translationResultListView;
-    ArrayAdapter translationResultListViewAdapter;
+    ListView translatedSentenceListView;
+    TranslatedSentenceListAdapter translatedSentenceListViewAdapter;
 
     TextView textView;
     CustomView customView;
@@ -105,9 +104,9 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 
         //photoView = (PhotoView)findViewById(R.id.photo_view);
 
-        translationResultListView = (ListView)findViewById(R.id.listView_translation_result);
-        translationResultListViewAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
-        translationResultListView.setAdapter(translationResultListViewAdapter);
+        translatedSentenceListView = (ListView)findViewById(R.id.listView_translation_result);
+        translatedSentenceListViewAdapter = new TranslatedSentenceListAdapter(this);
+        translatedSentenceListView.setAdapter(translatedSentenceListViewAdapter);
 
         findViewById(R.id.button_go_human_translation_request_activity).setOnClickListener(mClickListener);
         findViewById(R.id.button_translation_warning).setOnClickListener(mClickListener);
@@ -151,11 +150,11 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                 summaryText = cursor.getString(cursor.getColumnIndex("SUMMARY_TEXT"));
 
                 Log.i(Constants.LOG_TAG, "HISTORY_ID " + historyId
-                        + " PICTURE_TIME" + pictureTime
-                        + " PICTURE_PATH_AND_FILE_NAME " + picturePathAndFileName
-                        + " PICTURE_FILE_NAME " + pictureFileName
-                        + " ORIGINAL_TEXT " + originalText
-                        + " SUMMARY_TEXT " + summaryText
+                        + " ,PICTURE_TIME" + pictureTime
+                        + " ,PICTURE_PATH_AND_FILE_NAME " + picturePathAndFileName
+                        + " ,PICTURE_FILE_NAME " + pictureFileName
+                        + " ,ORIGINAL_TEXT " + originalText
+                        + " ,SUMMARY_TEXT " + summaryText
                 );
             }
             cursor.close();
@@ -196,12 +195,16 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 //        originalTextListViewAdapter.addAll(originalSentenceArrayList);
 //        originalTextListView.setAdapter(originalTextListViewAdapter);
 
-        translationResultListViewAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
-        translationResultListViewAdapter.addAll(originalSentenceArrayList);
-        translationResultListView.setAdapter(translationResultListViewAdapter );
+        translatedSentenceListViewAdapter = new TranslatedSentenceListAdapter(this);
+        for(int i=0; i<originalSentenceArrayList.size(); i++) {
+            translatedSentenceListViewAdapter.addItem(
+                    new Sentence(i, originalSentenceArrayList.get(i), "", "")
+            );
+        }
+        translatedSentenceListView.setAdapter(translatedSentenceListViewAdapter);
 
         isToRetryTranslation = false;
-        buttonRequestAgain.setEnabled(isToRetryTranslation);
+        //buttonRequestAgain.setEnabled(isToRetryTranslation);
 
         sendAndReceiveMachineTranslationResult();
     }
@@ -281,7 +284,7 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                 }
                 else {
                     isToRetryTranslation = true;
-                    buttonRequestAgain.setEnabled(isToRetryTranslation);
+                    //buttonRequestAgain.setEnabled(isToRetryTranslation);
                 }
             }
 
@@ -308,34 +311,42 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
             String responseTime = responseJSON.getResponse_time();
 
             Sentence[] sentences = responseJSON.getSentences();
-            for(int i=0; i<sentences.length; i++) {
-                responseSentences += sentences[i].getSentence_number() + "|";
+            if (sentences != null) {
+                for (int i = 0; i < sentences.length; i++) {
+                    responseSentences += sentences[i].getSentence_number() + "|";
 
-                responseSentences += sentences[i].getOriginal_sentence() + "|";
-                originalSentences += sentences[i].getOriginal_sentence() + "\n";
+                    responseSentences += sentences[i].getOriginal_sentence() + "|";
+                    originalSentences += sentences[i].getOriginal_sentence() + "\n";
 
-                responseSentences += sentences[i].getTranslated_sentence_by_wehealed() + "`";
-                translatedSentencesByWeHealed += sentences[i].getTranslated_sentence_by_wehealed() + "\n";
+                    responseSentences += sentences[i].getTranslated_sentence_by_wehealed() + "`";
+                    translatedSentencesByWeHealed += sentences[i].getTranslated_sentence_by_wehealed() + "\n";
 
-                responseSentences += sentences[i].getTranslated_sentence_by_google() + "`";
-                translatedSentencesByGoogle += sentences[i].getTranslated_sentence_by_google() + "\n";
+                    responseSentences += sentences[i].getTranslated_sentence_by_google() + "`";
+                    translatedSentencesByGoogle += sentences[i].getTranslated_sentence_by_google() + "\n";
+                }
             }
 
             Summary[] summaries = responseJSON.getSummaries();
             String summaryText = new String();
             int summarySentenceNumber = 0;
-            for(int i=0; i<summaries.length; i++) {
-                summaryText = summaries[i].getSummary_text();
-                summarySentenceNumber = summaries[i].getSummary_number();
+            if (summaries != null) {
+                for (int i = 0; i < summaries.length; i++) {
+                    summaryText = summaries[i].getSummary_text();
+                    summarySentenceNumber = summaries[i].getSummary_number();
+                }
             }
 
-
             try {
-                dbHelper.exec("UPDATE PICTURE_HISTORY_V5 SET " +
+                responseSentences = responseSentences.replaceAll("\'", "\''");
+                responseSentences = responseSentences.replaceAll("\"", "\\\"");
+
+                String sql = "UPDATE PICTURE_HISTORY_V5 SET " +
                         "MACHINE_TRANSLATION_RESULT = '" + responseSentences + "' " +
                         ", SUMMARY_TEXT = '" + summaryText + "' " +
                         ", SUMMARY_SENTENCE_NUMBER = '" + summarySentenceNumber + "' " +
-                        "WHERE HISTORY_ID = '" + historyId + "';");
+                        "WHERE HISTORY_ID = '" + historyId + "';";
+                Log.d(Constants.LOG_TAG, sql);
+                dbHelper.exec(sql);
 
                 Log.d("WeHealed Response", "Machine Translation HistoryId " + historyId);
                 Log.d("WeHealed Response", "originalSentences : " + originalSentences);
@@ -343,8 +354,8 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                 Log.d("WeHealed Response", "translatedSentencesByWeHealed : " + translatedSentencesByWeHealed);
                 Log.d("WeHealed Response", "summaryText : " + summaryText);
                 Log.d("WeHealed Response", "summarySentenceNumber : " + summarySentenceNumber);
-                Log.d("WeHealed Response", responseJSON.getSentences()[0].getOriginal_sentence());
-                Log.d("WeHealed Response",responseJSON.getDescribing_urls()[0].getKey() + "  :  " + responseJSON.getDescribing_urls()[0].getUrl());
+//                Log.d("WeHealed Response", responseJSON.getSentences()[0].getOriginal_sentence());
+//                Log.d("WeHealed Response",responseJSON.getDescribing_urls()[0].getKey() + "  :  " + responseJSON.getDescribing_urls()[0].getUrl());
             } catch (Exception e) {
                 e.printStackTrace();
 
@@ -361,15 +372,20 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 //            originalTextListView.setAdapter(originalTextListViewAdapter);
 
             // 서버 수신 데이터 -> 번역 결과 표시
-            translationResultListViewAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
-            for(int i=0; i<sentences.length; i++) {
-                String sentence = new String();
-                sentence += sentences[i].getOriginal_sentence() + "\n";
-                sentence += sentences[i].getTranslated_sentence_by_google() + "\n";
-                sentence += sentences[i].getTranslated_sentence_by_wehealed() + "";
-                translationResultListViewAdapter.add(sentence);
+            translatedSentenceListViewAdapter = new TranslatedSentenceListAdapter(this);
+            DescribingURL[] urls = responseJSON.getDescribing_urls();
+            translatedSentenceListViewAdapter.setUrls(urls);
+            if (sentences != null) {
+                for (int i = 0; i < sentences.length; i++) {
+                    Sentence item = new Sentence(i,
+                            sentences[i].getOriginal_sentence(),
+                            sentences[i].getTranslated_sentence_by_google(),
+                            sentences[i].getTranslated_sentence_by_wehealed()
+                    );
+                    translatedSentenceListViewAdapter.addItem(item);
+                }
             }
-            translationResultListView.setAdapter(translationResultListViewAdapter);
+            translatedSentenceListView.setAdapter(translatedSentenceListViewAdapter);
 
             // TODO : 서버 수신 데이터 -> Summary 표시
         }
@@ -390,7 +406,7 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                     break;
                 case R.id.button_request_again :
                     isToRetryTranslation = false;
-                    buttonRequestAgain.setEnabled(isToRetryTranslation);
+                    //buttonRequestAgain.setEnabled(isToRetryTranslation);
                     sendAndReceiveMachineTranslationResult();
                     break;
             }
@@ -452,5 +468,89 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
     }
 
 
+    // 해석 원본 및 결과 표시
+    public class TranslatedSentenceListAdapter extends BaseAdapter {
+
+        private Context mContext;
+
+        ArrayList<Sentence> items = new ArrayList<Sentence>();
+        DescribingURL[] urls;
+        Linkify.TransformFilter filter;
+
+        public TranslatedSentenceListAdapter(Context context) {
+            mContext = context;
+            filter = new Linkify.TransformFilter() {
+                @Override
+                public String transformUrl(Matcher match, String url) {
+                    return "";
+                }
+            };
+        }
+
+        public void setUrls(DescribingURL[] urls) {
+            this.urls = urls;
+        }
+
+        @Override
+        public int getCount() {
+            return Math.min(items.size(), 10);
+            //return items.size();
+        }
+
+        public void clear() {
+            items.clear();
+        }
+
+        public void addItem(Sentence item) {
+            items.add(item);
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return items.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup viewGroup) {
+
+            TranslatedSentenceItemView itemView;
+            if (convertView == null) {
+                itemView = new TranslatedSentenceItemView(mContext);
+            }
+            else {
+                itemView = (TranslatedSentenceItemView) convertView;
+            }
+
+            try {
+                Sentence item = items.get(position);
+
+                if (item != null) {
+                    itemView.setValue(
+                            item.getOriginal_sentence(),
+                            item.getTranslated_sentence_by_google(),
+                            item.getTranslated_sentence_by_wehealed());
+
+                    if (urls != null) {
+                        for (int i = 0; i < urls.length; i++) {
+                            Pattern pattern = Pattern.compile(urls[i].getKey());
+                            itemView.applyLink(
+                                    pattern, urls[i].getUrl(), filter
+                            );
+                        }
+                    }
+                }
+            }
+            catch(Exception e) {
+                Log.d("WeHealed", e.toString());
+            }
+
+            return itemView;
+        }
+    }
 
 }

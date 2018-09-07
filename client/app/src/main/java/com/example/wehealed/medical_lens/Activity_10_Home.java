@@ -301,7 +301,7 @@ public class Activity_10_Home extends AppCompatActivity
 
         @Override
         public int getCount() {
-            return Math.max(items.size(), 10);
+            return Math.min(items.size(), 10);
             //return items.size();
         }
 

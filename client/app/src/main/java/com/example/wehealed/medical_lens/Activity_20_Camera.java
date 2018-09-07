@@ -288,12 +288,11 @@ public final class Activity_20_Camera extends AppCompatActivity {
                 for (int i = 0; i < list.size(); ++i) {
                     originalText += list.get(i) + "|";
                 }
-
-                originalText.replaceAll("'", "")
+                originalText = originalText.replaceAll("\'", "\''");
+                originalText = originalText.replaceAll("\"", "\\\"");
 
                 // DB 에 기록한다
-
-                dbHelper.exec("INSERT INTO PICTURE_HISTORY_V5 (" +
+                String sql = "INSERT INTO PICTURE_HISTORY_V5 (" +
                         "PICTURE_PATH_AND_FILE_NAME" +
                         ", PICTURE_FILE_NAME" +
                         ", PICTURE_TIME" +
@@ -310,7 +309,9 @@ public final class Activity_20_Camera extends AppCompatActivity {
                         ", ''" +
                         ", '', '', '', '', 'N'" +
                         ", '', 0" +
-                        ");");
+                        ");";
+                dbHelper.exec(sql);
+                Log.d(Constants.LOG_TAG, sql);
 
                 Cursor cursor = dbHelper.get("SELECT MAX(HISTORY_ID) FROM PICTURE_HISTORY_V5;");
                 try {

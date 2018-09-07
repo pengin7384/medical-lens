@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textView_original_sentence"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Moderate rheumatic MS(MVA = 1.4/1.1cm2 by PHT/Planimetry, Mean PG = 6mmHg)."
+        android:textColor="@android:color/darker_gray"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/textView_translated_sentence_by_google"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="10dp"
+        android:text="중등 류마티스 성 MS (MVA = PH / PL 측정법에 의한 MVA = 1.4 / 1.1cm2, 평균 PG = 6mmHg)."
+        android:textColor="@android:color/holo_orange_dark"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView_translated_sentence_by_wehealed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="10dp"
+        android:text="중등 류마티스 성 승모판 협착증 (승모판 면적 = 장력 / 면적 측정의 피크 높이에 따른 1.4 / 1.1cm2, 평균 PG = 6mmHg)"
+        android:textColor="@android:color/black"
+        android:textColorLink="@color/colorPrimaryDark"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</LinearLayout>

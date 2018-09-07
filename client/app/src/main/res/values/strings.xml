@@ -34,5 +34,7 @@
     <string name="translation_warning_detail">해석 결과에 책임지지않습니다</string>
     <string name="clear_history">Clear</string>
     <string name="clear_history_confirm">의료번역 이력을 삭제하시겠습니까?</string>
+    <string name="terms_text">개발팀은 어플리케이션에 포함되어 있거나, 어플리케이션을 통해 배포되거나, 어플리케이션에 포함되어 있는 서비스로부터 얻게 되는 모든 정보의 정확성이나 신뢰성에 대해 어떠한 보증도 하지 않으며, 자료의 정확성, 저작권  준수 여부, 적법성 또는 도덕성에 대해 아무런 책임을 지지 않습니다.</string>
+    <string name="info_camera">글자 인식 상황을 확인한 후 촬영해주세요</string>
 
 </resources>
