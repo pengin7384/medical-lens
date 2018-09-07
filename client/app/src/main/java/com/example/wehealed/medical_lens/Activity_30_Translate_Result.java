@@ -227,7 +227,7 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
         }*/
 
         // TODO : 최신버전의 서버 API 를 호출한다
-        Call<MachineTranslationResponseJSON> call = retrofitService.getJSON_V2(requestJSON);
+        Call<MachineTranslationResponseJSON> call = retrofitService.getJSON_Test(requestJSON);
         call.enqueue(new Callback<MachineTranslationResponseJSON>() {
             @Override
             public void onResponse(Call<MachineTranslationResponseJSON> call, Response<MachineTranslationResponseJSON> response) {
@@ -275,8 +275,8 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                 Log.d("WeHealed Response", "Machine Translation HistoryId " + historyId);
                 Log.d("WeHealed Response", "originalSentences : " + originalSentences);
                 Log.d("WeHealed Response", "translatedSentences : " + translatedSentences);
-                Log.d("WeHealed Response", responseJSON.getSentences()[0].getOriginal_sentence());
-                Log.d("WeHealed Response",responseJSON.getDescribing_urls()[0].getKey() + "  :  " + responseJSON.getDescribing_urls()[0].getUrl());
+                //Log.d("WeHealed Response", responseJSON.getSentences()[0].getOriginal_sentence());
+                //Log.d("WeHealed Response",responseJSON.getDescribing_urls()[0].getKey() + "  :  " + responseJSON.getDescribing_urls()[0].getUrl());
             } catch (Exception e) {
                 e.printStackTrace();
 
