@@ -15,7 +15,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String CLASSNAME = DBHelper.class.getSimpleName();
 
     private static final String DB_NAME = "WeHealed_Medical_Lens.db";
-    private static final int DB_VERSION = 8;
+    private static final int DB_VERSION = 10;
 
     public static String myEmailAddress = "";
     public static String myName = "";
@@ -31,7 +31,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
             try {
                 db = dbHelperInstance.getWritableDatabase();
-                Log.i(Constants.LOG_TAG, DBHelper.CLASSNAME + " instance of database " + DB_NAME + " created");
+                Log.i(Constants.LOG_TAG, DBHelper.CLASSNAME + " instance of database " + DB_NAME + " opened");
             }
             catch (SQLiteException e) {
                 Log.i(Constants.LOG_TAG, "Could not create and/or open database");
@@ -85,12 +85,12 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO MY_INFO_V5 VALUES ('contact@wehealed.com', '1', 1000);");
         Log.i(Constants.LOG_TAG, "DBHelper onCreate INSERT INTO MY_INFO_V5");
 
-        db.execSQL("CREATE TABLE PICTURE_HISTORY_V5 (HISTORY_ID INTEGER PRIMARY KEY AUTOINCREMENT\" +\n" +
-                "                \", PICTURE_PATH_AND_FILE_NAME TEXT, PICTURE_FILE_NAME TEXT, PICTURE_TIME INTEGER" +
+        db.execSQL("CREATE TABLE PICTURE_HISTORY_V5 (HISTORY_ID INTEGER PRIMARY KEY AUTOINCREMENT" +
+                ", PICTURE_PATH_AND_FILE_NAME TEXT, PICTURE_FILE_NAME TEXT, PICTURE_TIME INTEGER" +
                 ", ORIGINAL_TEXT TEXT" +
                 ", MACHINE_TRANSLATION_RESULT TEXT" +
                 ", HUMAN_TRANSLATION_REQUESTED TEXT, HUMAN_TRANSLATION_REQUEST_TIME INTEGER, HUMAN_TRANSLATION_RESPONSE_TIME INTEGER, HUMAN_TRANSLATION_RESULT TEXT, HUMAN_TRANSLATION_CONFIRMED TEXT" +
-                ", SUMMARY_TEXT TEXT" +
+                ", SUMMARY_TEXT TEXT, SUMMARY_SENTENCE_NUMBER INTEGER " +
                 ");");
         Log.i(Constants.LOG_TAG, "DBHelper onCreate CREATE TABLE PICTURE_HISTORY_V5");
     }

@@ -1,0 +1,139 @@
+#1
+No change of indolent GGN in the RUL.
+No change of bronchiectasis in the LUL lingula.
+RUL의 약 6mm GGN 변화 없고 indolent GGN로 생각됨.
+그 주위의 작은 GGN과 RML의 tiny nodule 변화 없음.
+LUL lingula의 bronchiectasis 변화 없음.
+mediastinum에서 뚜렷하게 커져 있는 LN 없음.
+liver에 cyst로 보이는 low attenuating lesion 변화 없음.
+
+#2
+Lung cancer. 
+Right Lower Lobe. 
+Squamous cell carcinoma.
+Lymph node. "7". biopsy for frozen section.
+No evidence of malignancy.
+Lymph node "11R" biopsy for frozen section.
+No evidence of malignancy.
+Lung and lymph node, right lower lobe. lobectomy and mediastinal lymph node dissection.
+Squamous cell carcinoma, moderately differentiated. basal trunk.
+Vascular invasion (arteriolar or venous): not identified.
+Lymphatic invasion: not identified.
+Perineural invasion: not identified.
+Negative resection margins (0.2 cm apart from main tumor)(see note).
+Pleural/extrapleural.
+tumor located within the lung parenchyma(PLO).
+Regional lymph nodes included in main specimen (N1).
+Total number examined: 6.
+Number involved by tumor: 0.
+Separately submitted N1 or N2 lymph nodes.
+Total number examined: 16.
+Number involved by tumor: 0.
+
+#3
+CT scan of the chest with enhancement.
+Right upper lobe의 apical segment에 irregular nodular opacity(21mm)와 surrounding ground glass opacity가 관찰되며 mild enhancement를 보임.
+Right upper lobe의 apical과 posterior segment에 small nodule이 관찰됨.
+Left upper lobe apicoposterior segment에 ground glass opacity nodule이 관찰됨.
+그외 lung field는 비교적 clear함.
+Mediastinal structure는 정상적인 모양을 보이며 enlarged lymph node는 관찰되지 않음.
+R/O Malignancy at apical segment of RUL.
+R/O Organizing pneumonia.
+Small nodules at apical and posterior segment of RUL.
+Ground glass opacity nodule at apicoposterior segment of LUL.
+
+#4
+sbyterian Medical Center.
+Tumor Proportion Score: 70 %
+Note) 상기 검사 결과는 의료법인 녹십자의료재단 (GCLabs)에 위탁 검사한 결과입니다.
+<ALK FISH evaluation result>.
+The number of cell scored: 60.
+Distinct two break-apart signals: 1(1.7%).
+Isolated red signals: 0(0%).
+Fused yellow signals: 59(98.3%).
+Isolated green signals: 0(0%).
+<Summary>.
+The result of ALK-rearrangement: Negative.
+
+#5
+No evidence of local tumor recurrence or pulmonary metastasis.
+No demonstrable abnormal (FDG uptake suggesting malignancy.
+No significant interval change of small subpleural nodule without significant.
+FDG uptake in right lung lower lobe, benign lesion more likely.
+Mild increase of FDG uptake in stomach, benign lesion more likely.
+
+#6
+Liver right lobe posterior section에 약 7.9cm으로 측정되는 Solid mass가 있음.
+이 mass는 arterial enhancement와 washout을 보이는 portion과 delayed phase로 갈수록 enhancement가 되는 양상의 portion이 섞여있는 것으로 의심되며 내부로 지나가는 vascular structure를 볼 수가 있음. 
+인접한 vessel에 뚜렷한 tumor thrombosis는 보이지 않으며, Capsular retraction 등의 소견은 없음.
+Underlying liver는 뚜렷한 cirrhotic change 보이지 않음.
+Biliary dilatation 소견 보이지 않음.
+이상의 소견을 고려할 때 combined HCC+COC 가능성과 sarcomatoid change를 동반하는 HCC 등의 malignant condition 가능성이 있으며 benign mass의 가능성은 떨어짐.
+GB에는 stone이 있음.
+Hepatoduodenal ligament 주변으로 small lymph node들이 있는데 reactive node로 생각됨.
+Peritoneal space에 small amount의 fluid collection이 있으나 nodularity 동반은 보이지 않으며 bone과 basal lung에는 뚜렷한 전이암의 증거는 없음.
+CONCLUSION.
+Hugo mass, right posterior section, 7.9 cm.
+Combined HCC+CCC.
+Other malionanoy. such as poorly-differentiated HCC. sarcomatoid HCC.
+Malignant tumor of liver.
+R/O Combined HCC + CCC.
+R/O Poorly-differentiated HCC.
+R/O Sar comatoid HCC.
+GB stone.
+
+#7
+US, Biliary And Pancreas.
+Follow up for pancreatic cystic lesion.
+Findings.
+Pancreas head에 약 1.8x2.4cm으로 measure되며 lobulating contoured cystic lesion이 있고 이전과 비교해서 크기가 증가 하였음. 
+Pancrcatic duct dilatation은 동반되어 있지 않음.
+Liver의 echogenicity는 정상 범위이며 right lobe에 약 1.3cm 크기의 hyperechoic lesion은 이전과 동일하게 있고 vascularity는 동반되어 있지 않으며, hemangioma의 가능성이 있겠음.
+양측 kidnieys, sopleen에 특이 소견 없음.
+Conclusion.
+Increased size of previously noted lobulated contour cystic lesion in pancreas head.
+No change of R/O hemangioma in right hepatic lobe.
+
+#9
+[GROSS DESCRIPTION].
+Two pale gray tissue fragments, measuring up to 0.2x0.2 cm, are totally embedded.
+Four pale gray tissue fragments, measuring up to 0.1×0.1 cm, are totaly embedded.
+[DIAGNOSIS].
+Lung. 'main', right, biopsy(#1).
+Acute and chronic inflammation.
+Lung. right upper lobe, biopsy(#2).
+Chronic inflammation with lymphoid aggregates.
+
+#10
+Napsin A : Negative.
+P40 : Negative.
+Thyroid Transcription Factor 1 : Negative.
+Chromogranin A : Negative.
+Synaptophysin : Negative.
+CD56 : Positive.
+Poorly diferentiated neuroendocrine carcinoma favor small cell carcinoma.
+Finding.
+liver에 몇 개의 smallow low allenuating lesion들이 있는데 크기가 작음에도 불구하고 discraete한 low attenuation을 보이고 있어서 cyst의 가능성이 높다고 생각됨.
+liver S5에 1cm미만의 defined mild arterial enhancement를 보이는 병변은 다른 phase에서 delinestion이 되지 않으며 nonspecific finding이나 metastasis의 가능성은낮다고 판단됨.
+Lt. adrenal gland에 약3.5cm 크기의 low attenuating mass가 있으며 metastasis 가능성이 높다고 판단됨.
+retroperitoneal space에 의미있어 보이는 LN은 없음.
+ascities 없음.
+bowel은 평가가 제한적이나 dellneation되고 있는 abnormal wall thickening이나 mass는 없음.
+definite한 bony destructive lesion 없음.
+Conclusion.
+Probable metastasis in the L1. adrenal gland.
+More likely hepatic cyst.
+Otherwise no definite metastasis in the abdomen and pelvis.
+
+#11
+NormalLV cavity dimension with Preserved systolic function; calculated EF 53-58% Enlarged both atria.
+No RWMA of LV.
+Normal LV wall thickness.
+Moderate rheumatic MS(MVA = 1.4/1.1cm2 by PHT/Planimetry, Mean PG = 6mmHg).
+Mild to moderate rheumatic AR(ll) with mild AS.
+Severe TR due to dilated tricuspid valve annulus and coaptation failure.
+No intracardiac mass, thrombi nor pericardial effusion.
+Dilated ascending aorta(42mm).
+Small LR shunt was seen at the Interatrial septum ==> suggestive of PMV puncture site.
+Conclusion) Slightly increased RA cavity size, otherwise, no significant interval change c/w previous exam.
+
