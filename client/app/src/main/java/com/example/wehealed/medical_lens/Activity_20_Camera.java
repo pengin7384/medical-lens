@@ -30,8 +30,10 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -134,6 +136,11 @@ public final class Activity_20_Camera extends AppCompatActivity {
         btnCapture = findViewById(R.id.button_main_capture);
         btnCapture.setOnClickListener(mClickListener);
 
+        // preview의 사이즈 조절 : 세로 길이 = 가로 길이 * 4 / 3 이 되도록 한다
+        // preview의 사이즈를 240dp * 320dp 로 함으로써, 실제 카메라 촬영 해상도 3:4 비율과 동일하도록 한다
+        int previewHeight = preview.getHeight();
+        int previewWidth = preview.getWidth();
+        preview.setMinimumHeight((int)((previewWidth * 4) / 3));
 
         // Set good defaults for capturing text.
         boolean autoFocus = true;
@@ -205,6 +212,7 @@ public final class Activity_20_Camera extends AppCompatActivity {
                 pictureStorageDirectory.mkdirs();
             }
 
+
             File fileItem = new File(pictureStorageDirectoryPath, currentDateTimeString + ".jpg");
             fileName = fileItem.getName();
 
@@ -212,9 +220,7 @@ public final class Activity_20_Camera extends AppCompatActivity {
 
             FileOutputStream output = null;
             try {
-                // 사진을 DCIM 폴더에 저장한다
-
-                // 불필요?
+                // 사진을 스마트폰의 MediaStore DB (갤러리DB)에 저장한다
                 //pictureStorageDirectory.createNewFile();
 
                 output = new FileOutputStream(fileItem);
@@ -224,22 +230,23 @@ public final class Activity_20_Camera extends AppCompatActivity {
                 pictureFileName = fileItem.getName();
 
                 // 사진을 앨범에 저장한다
-//                String outUriStr = MediaStore.Images.Media.insertImage(
-//                        getContentResolver(),
-//                        bitmap,
-//                        fileItem.getName(), "Medical-Lens Image"
-//                );
-//
-//                if (outUriStr == null) {
-//                    Log.d("WeHealed Capture", "Image insert failed");
-//                    return;
-//                }
-//                else {
-//                    Uri outUri = Uri.parse(outUriStr);
-//                    Log.d(TAG, "TakePicture result : " + outUri);
-//                    Toast.makeText(getApplicationContext(),"카메라로 찍은 사진을 앨범에 저장했습니다.",Toast.LENGTH_LONG).show();
+                // TODO : Pictures 가 아니라 Medical-Lens 에 저장
+                String outUriStr = MediaStore.Images.Media.insertImage(
+                        getContentResolver(),
+                        bitmap,
+                        fileItem.getName(), "Medical-Lens Captured Image"
+                );
+
+                if (outUriStr == null) {
+                    Log.d("WeHealed Capture", "MediaStore Image Save Failed");
+                    return;
+                }
+                else {
+                    Uri outUri = Uri.parse(outUriStr);
+                    Log.d("WeHealed Capture", "WeHealed Image Save Result : " + outUri);
+                    Toast.makeText(getApplicationContext(),"Medical-Lens 앨범에 사진을 저장했습니다.",Toast.LENGTH_LONG).show();
 //                    sendBroadcast(new Intent(ACTION_MEDIA_SCANNER_SCAN_FILE, outUri));
-//                }
+                }
 
                 // 사진으로부터 텍스트 추출 한다
                 ArrayList<String> list = new ArrayList<String >();

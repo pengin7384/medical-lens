@@ -3,6 +3,7 @@ package com.example.wehealed.medical_lens;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
@@ -54,8 +55,13 @@ public class HistoryItemView extends LinearLayout {
 
         File imgFile = new  File(picturePathAndFileName);
         if(imgFile.exists()){
-            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-            imageView_pictureImage.setImageBitmap(myBitmap);
+            Bitmap originalBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+
+            Matrix matrix = new Matrix();
+            matrix.postRotate(90);
+            Bitmap rotatedBitmap = Bitmap.createBitmap(originalBitmap, 0,0, originalBitmap.getWidth(), originalBitmap.getHeight(), matrix, true);
+
+            imageView_pictureImage.setImageBitmap(rotatedBitmap);
         }
 
         //long pictureTimeLong = (long)pictureTime;

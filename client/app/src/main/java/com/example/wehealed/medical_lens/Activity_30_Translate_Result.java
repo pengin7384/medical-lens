@@ -8,12 +8,14 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.RectF;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -33,6 +35,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import uk.co.senab.photoview.PhotoView;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class Activity_30_Translate_Result extends AppCompatActivity {
 
@@ -47,6 +51,10 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
     String originalText = "";
     String summaryText = "";
 
+    ArrayList<String> originalSentenceArrayList;
+    boolean isToRetryTranslation = false;
+
+    Button buttonRequestAgain;
 
     ImageView pictureImageView;
 //    TextView machineTranslateResultTextView;
@@ -57,6 +65,8 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 
     ListView translationResultListView;
     ArrayAdapter translationResultListViewAdapter;
+
+//    PhotoView photoView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,11 +96,17 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 //        originalTextListViewAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
 //        originalTextListView.setAdapter(originalTextListViewAdapter);
 
+        //photoView = (PhotoView)findViewById(R.id.photo_view);
+
         translationResultListView = (ListView)findViewById(R.id.listView_translation_result);
         translationResultListViewAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
         translationResultListView.setAdapter(translationResultListViewAdapter);
 
         findViewById(R.id.button_go_human_translation_request_activity).setOnClickListener(mClickListener);
+        findViewById(R.id.button_translation_warning).setOnClickListener(mClickListener);
+        findViewById(R.id.button_request_again).setOnClickListener(mClickListener);
+
+        buttonRequestAgain = (Button)findViewById(R.id.button_request_again);
 
         initialize();
     }
@@ -142,33 +158,36 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
             Bitmap rotatedBitmap = Bitmap.createBitmap(originalBitmap, 0,0, originalBitmap.getWidth(), originalBitmap.getHeight(), matrix, true);
 
             pictureImageView.setImageBitmap(rotatedBitmap);
+
+            //photoView.setImageBitmap(rotatedBitmap);
+            PhotoViewAttacher photoViewAttacher = new PhotoViewAttacher(pictureImageView);
+            photoViewAttacher.setScaleType(ImageView.ScaleType.FIT_XY);
         }
+
 
         // 클라이언트 DB 데이터 -> 사진 파일이름 표시
 //        pictureFileNameTextView.setText(pictureFileName);
 
 
         // 클라이언트 DB 데이터 -> originalText 표시
-        ArrayList<String> arrayList = new ArrayList<String>();
         StringTokenizer st = new StringTokenizer(originalText, "|");
+        originalSentenceArrayList = new ArrayList<String>();
         while (st.hasMoreTokens()) {
             String sentence = st.nextToken();
-            arrayList.add(sentence);
+            originalSentenceArrayList.add(sentence);
         }
 //        originalTextListViewAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
-//        originalTextListViewAdapter.addAll(arrayList);
+//        originalTextListViewAdapter.addAll(originalSentenceArrayList);
 //        originalTextListView.setAdapter(originalTextListViewAdapter);
 
         translationResultListViewAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
-        translationResultListViewAdapter.addAll(arrayList);
+        translationResultListViewAdapter.addAll(originalSentenceArrayList);
         translationResultListView.setAdapter(translationResultListViewAdapter );
 
-        Sentence[] sentences = new Sentence[arrayList.size()];
-        for(int i=0; i<arrayList.size(); i++) {
-            Sentence s = new Sentence(i+1,arrayList.get(i),"", "");
-            sentences[i] = s;
-        }
-        sendAndReceiveMachineTranslationResult(sentences);
+        isToRetryTranslation = false;
+        buttonRequestAgain.setEnabled(isToRetryTranslation);
+
+        sendAndReceiveMachineTranslationResult();
     }
 
     @Override
@@ -213,13 +232,21 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 
     // 서버로 번역을 요청한다
     // Post + Json 방식
-    public void sendAndReceiveMachineTranslationResult(Sentence[] sentences) {
+    public void sendAndReceiveMachineTranslationResult() {
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(RetrofitService.requestBaseURL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         RetrofitService retrofitService = retrofit.create(RetrofitService.class);
+
+        Sentence[] sentences = new Sentence[originalSentenceArrayList.size()];
+        for(int i=0; i<originalSentenceArrayList.size(); i++) {
+            Sentence s = new Sentence(i+1,originalSentenceArrayList.get(i),"", "");
+            sentences[i] = s;
+        }
+
         MachineTranslationRequestJSON requestJSON = new MachineTranslationRequestJSON(pictureFileName, sentences);
 /*
         for(int i=0; i<requestJSON.getSentences().length; i++) {
@@ -227,12 +254,19 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
         }*/
 
         // TODO : 최신버전의 서버 API 를 호출한다
-        Call<MachineTranslationResponseJSON> call = retrofitService.getJSON_Test(requestJSON);
+        Call<MachineTranslationResponseJSON> call = retrofitService.getJSON_V5(requestJSON);
         call.enqueue(new Callback<MachineTranslationResponseJSON>() {
             @Override
             public void onResponse(Call<MachineTranslationResponseJSON> call, Response<MachineTranslationResponseJSON> response) {
-                MachineTranslationResponseJSON repo = response.body();
-                processResponse(repo);
+
+                if (response.isSuccessful()) {
+                    MachineTranslationResponseJSON repo = response.body();
+                    processResponse(repo);
+                }
+                else {
+                    isToRetryTranslation = true;
+                    buttonRequestAgain.setEnabled(isToRetryTranslation);
+                }
             }
 
             @Override
@@ -338,6 +372,11 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                 case R.id.button_translation_warning :
                     showTranslationWarning();
                     break;
+                case R.id.button_request_again :
+                    isToRetryTranslation = false;
+                    buttonRequestAgain.setEnabled(isToRetryTranslation);
+                    sendAndReceiveMachineTranslationResult();
+                    break;
             }
         }
     };
@@ -354,4 +393,7 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                 .setPositiveButton(R.string.ok, listener)
                 .show();
     }
+
+
+
 }

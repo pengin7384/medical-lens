@@ -240,9 +240,9 @@ public class Activity_10_Home extends AppCompatActivity
 //                .show();
 
         try {
-            dbHelper.get("DELETE FROM PICTURE_HISTORY_V5");
+            dbHelper.get("DELETE FROM PICTURE_HISTORY_V5;");
 
-            Log.i(Constants.LOG_TAG, "DELETE FROM PICTURE_HISTORY_V5");
+            Log.i(Constants.LOG_TAG, "DELETE FROM PICTURE_HISTORY_V5;");
 
             historyListAdapter.clear();
             historyListAdapter.notifyDataSetChanged();

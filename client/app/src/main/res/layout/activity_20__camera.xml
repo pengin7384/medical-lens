@@ -35,14 +35,17 @@
 
         <com.example.wehealed.medical_lens.CameraSourcePreview
             android:id="@+id/preview"
-            android:layout_width="match_parent"
-            android:layout_height="398dp"
+            android:layout_width="240dp"
+            android:layout_height="320dp"
             android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/textPreviewFrame"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
-            tools:layout_editor_absoluteX="0dp">
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar_camera"
+            app:layout_constraintVertical_bias="0.006">
 
             <com.example.wehealed.medical_lens.GraphicOverlay
                 android:id="@+id/graphicOverlay"
