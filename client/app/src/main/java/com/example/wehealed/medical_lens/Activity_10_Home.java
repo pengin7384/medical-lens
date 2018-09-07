@@ -112,14 +112,15 @@ public class Activity_10_Home extends AppCompatActivity
     }
 
     protected void loadHistoryList() {
-
-        historyListAdapter = new HistoryListAdapter(this);
-
+        // 클라이언트 DB 에서 히스토리를 읽어들여서 화면에 표시한다
         try {
             Cursor cursor = dbHelper.get("SELECT * FROM PICTURE_HISTORY_V5 ORDER BY HISTORY_ID DESC");
 
             try {
                 if (cursor.moveToFirst()) {
+
+                    historyListAdapter = new HistoryListAdapter(this);
+
                     do {
                         int historyId = cursor.getInt(cursor.getColumnIndex("HISTORY_ID"));
                         int pictureTime = cursor.getInt(cursor.getColumnIndex("PICTURE_TIME"));
@@ -138,6 +139,9 @@ public class Activity_10_Home extends AppCompatActivity
                         historyListAdapter.addItem(newItem);
 
                     } while (cursor.moveToNext());
+
+                    historyListView.setAdapter(historyListAdapter);
+                    historyListAdapter.notifyDataSetChanged();
                 }
             }
             catch (Exception e) {
@@ -154,8 +158,6 @@ public class Activity_10_Home extends AppCompatActivity
         catch (Exception e) {
             Log.i(Constants.LOG_TAG, e.toString());
         }
-
-        historyListView.setAdapter(historyListAdapter);
     }
 
     /**
@@ -243,6 +245,7 @@ public class Activity_10_Home extends AppCompatActivity
             Log.i(Constants.LOG_TAG, "DELETE FROM PICTURE_HISTORY_V5");
 
             historyListAdapter.clear();
+            historyListAdapter.notifyDataSetChanged();
 //            historyListAdapter = new HistoryListAdapter(this); // android.R.layout.simple_list_item_multiple_choice
 //            historyListView.setAdapter(historyListAdapter);
         }
@@ -331,11 +334,21 @@ public class Activity_10_Home extends AppCompatActivity
                 itemView = (HistoryItemView) convertView;
             }
 
-            itemView.setPicture(
-                    items.get(position).getPicturePathAndFileName(),
-                    items.get(position).getPictureFileName(),
-                    items.get(position).getPictureTime());
-            itemView.setSummary(items.get(position).getSummaryText());
+            try {
+                HistoryItem item = items.get(position);
+
+                if (item != null) {
+                    itemView.setPicture(
+                            item.getPicturePathAndFileName(),
+                            item.getPictureFileName(),
+                            item.getPictureTime());
+                    itemView.setSummary(item.getSummaryText());
+                }
+            }
+            catch(Exception e) {
+                Log.d("WeHealed", e.toString());
+            }
+
             return itemView;
         }
     }

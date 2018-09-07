@@ -4,15 +4,14 @@ public class MachineTranslationResponseJSON {
     private String response_time;
     private String picture_file_name;
     private Sentence[] sentences;
-    private String summary;
+    private Summary[] summaries;
     private DescribingURL[] describing_urls;
 
-
-    public MachineTranslationResponseJSON(String response_time, String picture_file_name, Sentence[] sentences, String summary, DescribingURL[] describing_urls) {
+    public MachineTranslationResponseJSON(String response_time, String picture_file_name, Sentence[] sentences, Summary[] summaries, DescribingURL[] describing_urls) {
         this.response_time = response_time;
         this.picture_file_name = picture_file_name;
         this.sentences = sentences;
-        this.summary = summary;
+        this.summaries = summaries;
         this.describing_urls = describing_urls;
     }
 
@@ -40,12 +39,12 @@ public class MachineTranslationResponseJSON {
         this.sentences = sentences;
     }
 
-    public String getSummary() {
-        return summary;
+    public Summary[] getSummaries() {
+        return summaries;
     }
 
-    public void setSummary(String summary) {
-        this.summary = summary;
+    public void setSummaries(Summary[] summaries) {
+        this.summaries = summaries;
     }
 
     public DescribingURL[] getDescribing_urls() {

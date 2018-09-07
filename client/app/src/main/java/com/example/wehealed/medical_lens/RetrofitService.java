@@ -18,7 +18,7 @@ public interface RetrofitService {
     );
 
     //@FormUrlEncoded
-    @POST("request_translate/")
+    @POST("request_translate_test/")
     Call<MachineTranslationResponseJSON> getJSON(@Body MachineTranslationRequestJSON machineTranslationRequestJSON);
 
     //@FormUrlEncoded
@@ -28,6 +28,10 @@ public interface RetrofitService {
     //@FormUrlEncoded
     @POST("request_translate_v2/")
     Call<MachineTranslationResponseJSON> getJSON_V2(@Body MachineTranslationRequestJSON machineTranslationRequestJSON);
+
+    //@FormUrlEncoded
+    @POST("request_translate_v4/")
+    Call<MachineTranslationResponseJSON> getJSON_V4(@Body MachineTranslationRequestJSON machineTranslationRequestJSON);
 
     /*
     @FormUrlEncoded

@@ -206,6 +206,7 @@ public final class Activity_20_Camera extends AppCompatActivity {
             }
 
             File fileItem = new File(pictureStorageDirectoryPath, currentDateTimeString + ".jpg");
+            fileName = fileItem.getName();
 
             Log.d("WeHealed TakePicture", "Filename = " + pictureStorageDirectoryPath + "/" + fileItem.getName() );
 
@@ -322,15 +323,27 @@ public final class Activity_20_Camera extends AppCompatActivity {
                     }
                 }
             }
+            /*
+<<<<<<< HEAD
+        });
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+=======*/
         } catch (Exception e) {
             Log.e("WeHealed", "Failed to capture the image", e);
         }
     }
+//>>>>>>> 26f9875050ecb57f1d00ce9e4a184917c07e3b42
 
     private void moveToTranslateResultActivity() {
         // 번역 Activity 실행한다
         Intent intent = new Intent(getApplicationContext(), Activity_30_Translate_Result.class);
         intent.putExtra("historyId", historyId);
+        intent.putExtra("name",fileName);
         startActivity(intent);
         finish();
 

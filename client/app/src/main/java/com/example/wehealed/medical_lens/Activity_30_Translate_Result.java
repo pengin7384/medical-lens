@@ -165,7 +165,7 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 
         Sentence[] sentences = new Sentence[arrayList.size()];
         for(int i=0; i<arrayList.size(); i++) {
-            Sentence s = new Sentence(i+1, arrayList.get(i),"");
+            Sentence s = new Sentence(i+1,arrayList.get(i),"", "");
             sentences[i] = s;
         }
         sendAndReceiveMachineTranslationResult(sentences);
@@ -248,14 +248,15 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 
         String responseSentences = "";
         String originalSentences = "";
-        String translatedSentences = "";
+        String translatedSentencesByGoogle = "";
+        String translatedSentencesByWeHealed = "";
 
         if(responseJSON != null) {
 
             // 서버 수신 데이터 -> DB 에 기록한다
             String responsePictureFileName = responseJSON.getPicture_file_name();
             String responseTime = responseJSON.getResponse_time();
-            String responseSummary = responseJSON.getSummary();
+
             Sentence[] sentences = responseJSON.getSentences();
             for(int i=0; i<sentences.length; i++) {
                 responseSentences += sentences[i].getSentence_number() + "|";
@@ -263,20 +264,37 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                 responseSentences += sentences[i].getOriginal_sentence() + "|";
                 originalSentences += sentences[i].getOriginal_sentence() + "\n";
 
-                responseSentences += sentences[i].getTranslated_sentence() + "`";
-                translatedSentences += sentences[i].getTranslated_sentence() + "\n";
+                responseSentences += sentences[i].getTranslated_sentence_by_wehealed() + "`";
+                translatedSentencesByWeHealed += sentences[i].getTranslated_sentence_by_wehealed() + "\n";
+
+                responseSentences += sentences[i].getTranslated_sentence_by_google() + "`";
+                translatedSentencesByGoogle += sentences[i].getTranslated_sentence_by_google() + "\n";
             }
+
+            Summary[] summaries = responseJSON.getSummaries();
+            String summaryText = new String();
+            int summarySentenceNumber = 0;
+            for(int i=0; i<summaries.length; i++) {
+                summaryText = summaries[i].getSummary_text();
+                summarySentenceNumber = summaries[i].getSummary_number();
+            }
+
 
             try {
                 dbHelper.exec("UPDATE PICTURE_HISTORY_V5 SET " +
                         "MACHINE_TRANSLATION_RESULT = '" + responseSentences + "' " +
+                        ", SUMMARY_TEXT = '" + summaryText + "' " +
+                        ", SUMMARY_SENTENCE_NUMBER = '" + summarySentenceNumber + "' " +
                         "WHERE HISTORY_ID = '" + historyId + "';");
 
                 Log.d("WeHealed Response", "Machine Translation HistoryId " + historyId);
                 Log.d("WeHealed Response", "originalSentences : " + originalSentences);
-                Log.d("WeHealed Response", "translatedSentences : " + translatedSentences);
-                //Log.d("WeHealed Response", responseJSON.getSentences()[0].getOriginal_sentence());
-                //Log.d("WeHealed Response",responseJSON.getDescribing_urls()[0].getKey() + "  :  " + responseJSON.getDescribing_urls()[0].getUrl());
+                Log.d("WeHealed Response", "translatedSentencesByGoogle : " + translatedSentencesByGoogle);
+                Log.d("WeHealed Response", "translatedSentencesByWeHealed : " + translatedSentencesByWeHealed);
+                Log.d("WeHealed Response", "summaryText : " + summaryText);
+                Log.d("WeHealed Response", "summarySentenceNumber : " + summarySentenceNumber);
+                Log.d("WeHealed Response", responseJSON.getSentences()[0].getOriginal_sentence());
+                Log.d("WeHealed Response",responseJSON.getDescribing_urls()[0].getKey() + "  :  " + responseJSON.getDescribing_urls()[0].getUrl());
             } catch (Exception e) {
                 e.printStackTrace();
 
@@ -292,15 +310,18 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 //            }
 //            originalTextListView.setAdapter(originalTextListViewAdapter);
 
-            // 서버 수신 데이터 -> 결과 표시
+            // 서버 수신 데이터 -> 번역 결과 표시
             translationResultListViewAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
             for(int i=0; i<sentences.length; i++) {
                 String sentence = new String();
                 sentence += sentences[i].getOriginal_sentence() + "\n";
-                sentence += sentences[i].getTranslated_sentence() + "";
+                sentence += sentences[i].getTranslated_sentence_by_google() + "\n";
+                sentence += sentences[i].getTranslated_sentence_by_wehealed() + "";
                 translationResultListViewAdapter.add(sentence);
             }
             translationResultListView.setAdapter(translationResultListViewAdapter);
+
+            // TODO : 서버 수신 데이터 -> Summary 표시
         }
     }
 
@@ -315,18 +336,22 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                     startActivity(intent);
                     break;
                 case R.id.button_translation_warning :
-                    DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            finish();
-                        }
-                    };
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
-                    builder.setTitle("Warning")
-                            .setMessage(R.string.translation_warning_detail)
-                            .setPositiveButton(R.string.ok, listener)
-                            .show();
+                    showTranslationWarning();
                     break;
             }
         }
     };
+
+    protected void showTranslationWarning() {
+        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                finish();
+            }
+        };
+        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+        builder.setTitle("Warning")
+                .setMessage(R.string.translation_warning_detail)
+                .setPositiveButton(R.string.ok, listener)
+                .show();
+    }
 }
