@@ -116,6 +116,9 @@ public class HistoryItem {
     }
 
     public void setSummaryText(String summaryText) {
+        if (summaryText == null) {
+            summaryText = new String("");
+        }
         this.summaryText = summaryText;
     }
 }

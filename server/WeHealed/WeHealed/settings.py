@@ -25,7 +25,7 @@ SECRET_KEY = '@im$#&q*xpec^*cbs=2p3!^5h)_ip4_ur3h)&9!7d6tc^j1me4'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [".goorm.io", "127.0.0.1"]
+ALLOWED_HOSTS = [".goorm.io"]
 
 
 # Application definition
@@ -107,16 +107,21 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Media File URL Prefix
+MEDIA_URL = '/media/'
+# Upload File Directory Path
+MEDIA_ROOT = os.path.join(BASE_DIR, 'WeHealedAPI/media')

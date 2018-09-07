@@ -20,7 +20,7 @@ public class CustomView extends View {
     public TokenResponseJSON data = null;
     public int textSize;
     public int base_x = 200;
-    public int base_Y = 500;
+    public int base_Y = 300;
 
     public String pos_tag[] = {
         "UNKNOWN", "ADJ", "ADP", "ADV", "CONJ", "DET", "NOUN", "NUM",

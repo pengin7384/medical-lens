@@ -7,6 +7,15 @@
     tools:context=".Activity_30_Translate_Result">
 
 
+    <Button
+        android:id="@+id/button_request_again"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="재번역"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar_translate_result"
         android:layout_width="match_parent"
@@ -14,42 +23,6 @@
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme" />
-
-    <FrameLayout
-        android:id="@+id/frameLayout"
-        android:layout_width="368dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="68dp"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="8dp">
-
-        <ImageView
-            android:id="@+id/imageView_picture"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:contentDescription="imageForTranslation"
-            app:layout_constraintStart_toStartOf="@+id/listView_translation_result"
-            app:layout_constraintTop_toBottomOf="@+id/listView_translation_result"
-            app:srcCompat="@drawable/ic_launcher" />
-
-        <FrameLayout
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/toolbar_translate_result">
-
-            <TextView
-                android:id="@+id/textView_picture_file_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="2018-12-12_12_34_12.jpg"
-                android:textColor="@android:color/black"
-                android:textSize="14sp" />
-        </FrameLayout>
-
-    </FrameLayout>
 
     <Button
         android:id="@+id/button_go_human_translation_request_activity"
@@ -62,40 +35,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="244dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/button_go_human_translation_request_activity"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frameLayout">
-
-        <TextView
-            android:id="@+id/machine_translation_response"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:text="TextView" />
-
-        <ListView
-            android:id="@+id/listView_translation_result"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:choiceMode="singleChoice"
-            android:divider="#ffcc22"
-            android:dividerHeight="1.5dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-        </ListView>
-
-    </LinearLayout>
-
     <Button
         android:id="@+id/button_translation_warning"
         android:layout_width="wrap_content"
@@ -107,6 +46,107 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ScrollView
+        android:id="@+id/scrollView3"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_translate_result">
+
+        <ImageView
+            android:id="@+id/imageView_picture"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="top|center_horizontal"
+            android:contentDescription="imageForTranslation"
+            android:scrollbarAlwaysDrawHorizontalTrack="false"
+            android:scrollbarAlwaysDrawVerticalTrack="false"
+            android:src="@drawable/singer"
+            android:verticalScrollbarPosition="right"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="@+id/listView_translation_result"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar_translate_result" />
+    </ScrollView>
+
+    <ListView
+        android:id="@+id/listView_translation_result"
+        android:layout_width="match_parent"
+        android:layout_height="232dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:choiceMode="singleChoice"
+        android:divider="#ffcc22"
+        android:dividerHeight="1.5dp"
+        app:layout_constraintBottom_toBottomOf="@+id/button_go_human_translation_request_activity"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView3"
+        app:layout_constraintVertical_bias="0.075">
+
+    </ListView>
+
+    <Button
+        android:id="@+id/buttonForTree"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="280dp"
+        android:layout_marginTop="80dp"
+        android:text="Tree"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <HorizontalScrollView
+        android:id="@+id/horizontalScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/blue"
+        android:fillViewport="true"
+        android:scrollbars="horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/scrollView3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/toolbar_translate_result"
+        app:layout_constraintVertical_bias="1.0">
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/scene_container"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <com.example.wehealed.medical_lens.CustomView
+                android:id="@+id/customView"
+                android:layout_width="2000dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:focusable="false" />
+        </RelativeLayout>
+
+    </HorizontalScrollView>
+
+
+    <!--
+            <HorizontalScrollView
+                android:id="@+id/horizontalScrollView"
+                android:layout_width="fill_parent"
+                android:layout_height="300dp"
+                android:fillViewport="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="@color/blue">
+
+                <com.example.wehealed.medical_lens.CustomView
+                    android:id="@+id/customView"
+                    android:layout_width="2000dp"
+                    android:layout_height="fill_parent"
+                    />
+            </HorizontalScrollView>-->
 
 
 </android.support.constraint.ConstraintLayout>

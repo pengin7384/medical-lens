@@ -15,14 +15,31 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from django.urls import path
+from django.conf.urls.static import static
 
-from WeHealedAPI import views, api
+from WeHealedAPI import views, api, flitto, welcome
+from WeHealed import settings
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    #url(r'', welcome.home, name='index'),
     url(r'^admin/', admin.site.urls),
     url(r'^test/', views.detail),
     url(r'^api/substitution/', api.substitution),
-    url(r'^api/test',api.test)
+    url(r'^api/test', api.test),
+    url(r'^api/request_translate/', api.request_translate),
+    url(r'^api/token', api.token),
+    url(r'^api/translate', api.trans),
+    url(r'^dbinit/', views.dbinit),
+    url(r'^api/url_recommend', api.url_recommend),
+    url(r'^api/update_recommend', api.update_recommend),
+    url(r'^api/make_dataset', api.make_dataset),
+    url(r'^api/numeric', api.get_numeric),
+    url(r'^api/date', api.get_date),
+    url(r'^api/rule', api.rule),
+    url(r'^api/add_rule', api.add_rule),
+    url(r'^api/flitto_receive_result', flitto.receive_result),
+    url(r'^api/image_upload/', api.image_upload)
 ]
+
+# media urlpattern setting
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

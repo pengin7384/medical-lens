@@ -30,8 +30,10 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -115,9 +117,6 @@ public final class Activity_20_Camera extends AppCompatActivity {
     private OcrDetectorProcessor processor;
     private String fileName="";
 
-    TextView textView;
-    CustomView customView;
-
     /**
      * Initializes the UI and creates the detector pipeline.
      */
@@ -125,10 +124,7 @@ public final class Activity_20_Camera extends AppCompatActivity {
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-
         setContentView(R.layout.activity_20__camera);
-
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_camera);
         setSupportActionBar(toolbar);
@@ -149,8 +145,11 @@ public final class Activity_20_Camera extends AppCompatActivity {
         btnCapture = findViewById(R.id.button_main_capture);
         btnCapture.setOnClickListener(mClickListener);
 
-        textView = (TextView) findViewById(R.id.textView222);
-        textView.setOnClickListener(mClickListener2);
+        // preview의 사이즈 조절 : 세로 길이 = 가로 길이 * 4 / 3 이 되도록 한다
+        // preview의 사이즈를 240dp * 320dp 로 함으로써, 실제 카메라 촬영 해상도 3:4 비율과 동일하도록 한다
+        int previewHeight = preview.getHeight();
+        int previewWidth = preview.getWidth();
+        preview.setMinimumHeight((int)((previewWidth * 4) / 3));
 
         // Set good defaults for capturing text.
         boolean autoFocus = true;
@@ -167,18 +166,7 @@ public final class Activity_20_Camera extends AppCompatActivity {
 
         gestureDetector = new GestureDetector(this, new CaptureGestureListener());
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
-        customView = (CustomView)findViewById(R.id.customView);
-
-        HorizontalScrollView vv = (HorizontalScrollView)findViewById(R.id.horizontalScrollView);
-        //vv.requestDisallowInterceptTouchEvent(true);
-        //vv.addView(customView);
-        //customView.getParent().requestDisallowInterceptTouchEvent(true);
-
-
-
-        // TODO: Set up the Text To Speech engine.
     }
-
 
     // Button Event
     Button.OnClickListener mClickListener = new View.OnClickListener() {
@@ -187,74 +175,9 @@ public final class Activity_20_Camera extends AppCompatActivity {
                 case R.id.button_main_capture:  // 캡처 버튼
                     onTakePictureButtonClick();
                     break;
-
             }
         }
     };
-
-    TextView.OnClickListener mClickListener2 = new View.OnClickListener() {
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.textView222:
-                    //Toast.makeText(getApplicationContext(),"sss",Toast.LENGTH_LONG).show();
-                    SparseArray<TextBlock> items = processor.getItems();
-
-                    ArrayList<TextData> arrayList = new ArrayList<TextData>();
-
-                    if(items != null) {
-                        for (int i = 0; i < items.size(); ++i) {
-                            TextBlock item = items.valueAt(i);
-                            if (item != null && item.getValue() != null) {
-                                List<? extends Text> texts = item.getComponents();
-                                for (Text line : texts) { // Line 단위
-                                    arrayList.add(new TextData(line.getBoundingBox().centerY(), line.getValue()));
-                                }
-                            }
-                        }
-
-                        Collections.sort(arrayList);
-                    }
-                    String str = arrayList.get(0).getText();
-                    //Toast.makeText(getApplicationContext(),str,Toast.LENGTH_LONG).show();
-                    //textView.setText(str);
-                    sendAndReceiveToken(str);
-
-            }
-
-        }
-    };
-
-    public void sendAndReceiveToken(final String text) {
-        String URL = "https://wehealedapi2.run.goorm.io/api/";
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        RetrofitService retrofitService = retrofit.create(RetrofitService.class);
-
-        Call<TokenResponseJSON> call = retrofitService.getJSON(text);
-        call.enqueue(new Callback<TokenResponseJSON>() {
-            @Override
-            public void onResponse(Call<TokenResponseJSON> call, Response<TokenResponseJSON> response) {
-                TokenResponseJSON repo = response.body();
-                //Log.d("WeHealed", String.valueOf(repo.tokens[0].getText().getContent()));
-                Token[] tl = repo.getTokens();
-                //textView.setText(tl[0].getText().getContent());
-                Toast.makeText(getApplicationContext(),String.valueOf(tl.length),Toast.LENGTH_LONG).show();
-
-                customView.drawTree(repo);
-        }
-
-            @Override
-            public void onFailure(Call<TokenResponseJSON> call, Throwable t) {
-                Log.d("WeHealed", "Token Failure");
-                Toast.makeText(getApplicationContext(), "Token Failure", Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -273,7 +196,7 @@ public final class Activity_20_Camera extends AppCompatActivity {
             Log.d("WeHealed TakePicture", "length = " + data.length);
 
             long pictureTime = System.currentTimeMillis();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.KOREA);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.KOREA);
             String currentDateTimeString = sdf.format(new Date(pictureTime));
             String timeStampString = TimeUnit.MILLISECONDS.toSeconds(pictureTime) + "";
 
@@ -294,6 +217,7 @@ public final class Activity_20_Camera extends AppCompatActivity {
                 pictureStorageDirectory.mkdirs();
             }
 
+
             File fileItem = new File(pictureStorageDirectoryPath, currentDateTimeString + ".jpg");
             fileName = fileItem.getName();
 
@@ -301,9 +225,7 @@ public final class Activity_20_Camera extends AppCompatActivity {
 
             FileOutputStream output = null;
             try {
-                // 사진을 DCIM 폴더에 저장한다
-
-                // 불필요?
+                // 사진을 스마트폰의 MediaStore DB (갤러리DB)에 저장한다
                 //pictureStorageDirectory.createNewFile();
 
                 output = new FileOutputStream(fileItem);
@@ -313,22 +235,23 @@ public final class Activity_20_Camera extends AppCompatActivity {
                 pictureFileName = fileItem.getName();
 
                 // 사진을 앨범에 저장한다
-//                String outUriStr = MediaStore.Images.Media.insertImage(
-//                        getContentResolver(),
-//                        bitmap,
-//                        fileItem.getName(), "Medical-Lens Image"
-//                );
-//
-//                if (outUriStr == null) {
-//                    Log.d("WeHealed Capture", "Image insert failed");
-//                    return;
-//                }
-//                else {
-//                    Uri outUri = Uri.parse(outUriStr);
-//                    Log.d(TAG, "TakePicture result : " + outUri);
-//                    Toast.makeText(getApplicationContext(),"카메라로 찍은 사진을 앨범에 저장했습니다.",Toast.LENGTH_LONG).show();
+                // TODO : Pictures 가 아니라 Medical-Lens 에 저장
+                String outUriStr = MediaStore.Images.Media.insertImage(
+                        getContentResolver(),
+                        bitmap,
+                        fileItem.getName(), "Medical-Lens Captured Image"
+                );
+
+                if (outUriStr == null) {
+                    Log.d("WeHealed Capture", "MediaStore Image Save Failed");
+                    return;
+                }
+                else {
+                    Uri outUri = Uri.parse(outUriStr);
+                    Log.d("WeHealed Capture", "WeHealed Image Save Result : " + outUri);
+                    Toast.makeText(getApplicationContext(),"Medical-Lens 앨범에 사진을 저장했습니다.",Toast.LENGTH_LONG).show();
 //                    sendBroadcast(new Intent(ACTION_MEDIA_SCANNER_SCAN_FILE, outUri));
-//                }
+                }
 
                 // 사진으로부터 텍스트 추출 한다
                 ArrayList<String> list = new ArrayList<String >();
@@ -366,21 +289,28 @@ public final class Activity_20_Camera extends AppCompatActivity {
                     originalText += list.get(i) + "|";
                 }
 
+                originalText.replaceAll("'", "");
+
                 // DB 에 기록한다
+
                 dbHelper.exec("INSERT INTO PICTURE_HISTORY_V5 (" +
                         "PICTURE_PATH_AND_FILE_NAME" +
                         ", PICTURE_FILE_NAME" +
                         ", PICTURE_TIME" +
                         ", ORIGINAL_TEXT" +
                         ", MACHINE_TRANSLATION_RESULT" +
-                        ", HUMAN_TRANSLATION_REQUESTED, HUMAN_TRANSLATION_REQUEST_TIME, HUMAN_TRANSLATION_RESPONSE_TIME, HUMAN_TRANSLATION_RESULT, HUMAN_TRANSLATION_CONFIRMED) " +
+                        ", HUMAN_TRANSLATION_REQUESTED, HUMAN_TRANSLATION_REQUEST_TIME, HUMAN_TRANSLATION_RESPONSE_TIME, HUMAN_TRANSLATION_RESULT, HUMAN_TRANSLATION_CONFIRMED" +
+                        ", SUMMARY_TEXT, SUMMARY_SENTENCE_NUMBER " +
+                        ") " +
                         "VALUES (" +
                         "'" + pictureStorageDirectoryPath + "/" + fileItem.getName() + "'" +
                         ", '" + fileItem.getName() + "'" +
                         ", '" + timeStampString + "'" +
-                        ", '" + originalText +
-                        "', ''" +
-                        ", '', '', '', '', 'N');");
+                        ", '" + originalText + "'" +
+                        ", ''" +
+                        ", '', '', '', '', 'N'" +
+                        ", '', 0" +
+                        ");");
 
                 Cursor cursor = dbHelper.get("SELECT MAX(HISTORY_ID) FROM PICTURE_HISTORY_V5;");
                 try {
@@ -393,6 +323,7 @@ public final class Activity_20_Camera extends AppCompatActivity {
                 }
                 catch (Exception e) {
                     Log.i(Constants.LOG_TAG, e.toString());
+
                 }
                 finally {
                     try {
@@ -402,31 +333,22 @@ public final class Activity_20_Camera extends AppCompatActivity {
                     }
                 }
             } catch (Exception e) {
+                Log.i(Constants.LOG_TAG, e.toString());
                 e.printStackTrace();
             } finally {
                 if (null != output) {
                     try {
                         output.close();
                     } catch (IOException e) {
+                        Log.i(Constants.LOG_TAG, e.toString());
                         e.printStackTrace();
                     }
                 }
             }
-            /*
-<<<<<<< HEAD
-        });
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-=======*/
         } catch (Exception e) {
             Log.e("WeHealed", "Failed to capture the image", e);
         }
     }
-//>>>>>>> 26f9875050ecb57f1d00ce9e4a184917c07e3b42
 
     private void moveToTranslateResultActivity() {
         // 번역 Activity 실행한다
@@ -439,7 +361,6 @@ public final class Activity_20_Camera extends AppCompatActivity {
     }
 
     private void onTakePictureButtonClick() {
-
         // 카메라 사진 촬영 이미지 저장
         cameraSource.takePicture(null, new com.example.wehealed.medical_lens.CameraSource.PictureCallback(){
             public void onPictureTaken(byte[] data, Camera camera) {
@@ -448,12 +369,6 @@ public final class Activity_20_Camera extends AppCompatActivity {
                 camera.startPreview();
             }
         });
-
-//        try {
-//            Thread.sleep(2000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
     }
 
     /**
@@ -734,7 +649,7 @@ public final class Activity_20_Camera extends AppCompatActivity {
      * @return a {@link String} representing a time.
      */
     private static String generateTimestamp() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS", Locale.KOREA);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.KOREA);
         return sdf.format(new Date());
     }
 
