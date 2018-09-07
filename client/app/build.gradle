@@ -36,4 +36,11 @@ dependencies {
     compile 'com.squareup.okhttp3:logging-interceptor:3.10.0'
     compile 'com.squareup.okhttp3:okhttp:3.10.0'
     compile 'com.google.code.gson:gson:2.8.2'
+
+    // gson
+    compile 'com.google.code.gson:gson:2.3.1'
+
+    // PhotoView
+    //implementation 'com.github.chrisbanes:PhotoView:1.2.4'
+    compile 'com.commit451:PhotoView:1.2.4'
 }
