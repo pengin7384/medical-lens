@@ -144,7 +144,7 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 
         Sentence[] sentences = new Sentence[arrayList.size()];
         for(int i=0; i<arrayList.size(); i++) {
-            Sentence s = new Sentence(i+1,arrayList.get(i),"");
+            Sentence s = new Sentence(i+1,arrayList.get(i),"", "");
             sentences[i] = s;
         }
         sendAndReceiveMachineTranslationResult(sentences);
@@ -233,6 +233,7 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                 dbHelper.exec("UPDATE PICTURE_HISTORY_V5 SET " +
                         "MACHINE_TRANSLATION_RESULT = '" + machineTranslateResponse + "' " +
                         "WHERE HISTORY_ID = '" + historyId + "';");
+
 
                 Log.d("WeHealed Response", "Machine Translation Result Saved :" + machineTranslateResponse);
                 Log.d("WeHealed Response", responseJSON.getSentences()[0].getOriginal_sentence());

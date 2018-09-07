@@ -206,6 +206,7 @@ public final class Activity_20_Camera extends AppCompatActivity {
             }
 
             File fileItem = new File(pictureStorageDirectoryPath, currentDateTimeString + ".jpg");
+            fileName = fileItem.getName();
 
             Log.d("WeHealed TakePicture", "Filename = " + pictureStorageDirectoryPath + "/" + fileItem.getName() );
 
@@ -342,6 +343,7 @@ public final class Activity_20_Camera extends AppCompatActivity {
         // 번역 Activity 실행한다
         Intent intent = new Intent(getApplicationContext(), Activity_30_Translate_Result.class);
         intent.putExtra("historyId", historyId);
+        intent.putExtra("name",fileName);
         startActivity(intent);
         finish();
 

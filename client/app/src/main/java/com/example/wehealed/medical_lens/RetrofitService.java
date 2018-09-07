@@ -14,7 +14,7 @@ public interface RetrofitService {
     );
 
     //@FormUrlEncoded
-    @POST("request_translate/")
+    @POST("request_translate_test/")
     Call<MachineTranslationResponseJSON> getJSON(@Body MachineTranslationRequestJSON machineTranslationRequestJSON);
 
     /*
