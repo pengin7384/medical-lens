@@ -392,16 +392,24 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                    String selectedItem = (String) parent.getItemAtPosition(position);
+                    Sentence s = (Sentence)parent.getItemAtPosition(position);
+                    //String selectedItem = (String) parent.getItemAtPosition(position);
                     //Log.d("WeHealed Click", "\n"+selectedItem);
                     //Toast.makeText(getApplicationContext(), selectedItem, Toast.LENGTH_LONG).show();
 
                     if(treeSwitch==false) {
+                        sendAndReceiveToken(s.getOriginal_sentence());
+
+
+
+                        /*
+
                         String[] data = selectedItem.split("\n");
                         sendAndReceiveToken(data[0]);
+
                         Log.d("WeHealed Click", ":::"+data[0]);
                         Log.d("WeHealed Click", ":::"+data[1]);
-                        Log.d("WeHealed Click", ":::"+data[2]);
+                        Log.d("WeHealed Click", ":::"+data[2]);*/
 
 
                         treeSwitch=true;
