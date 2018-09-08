@@ -380,13 +380,17 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                     String selectedItem = (String) parent.getItemAtPosition(position);
-                    Log.d("WeHealed Click", selectedItem);
+                    //Log.d("WeHealed Click", "\n"+selectedItem);
                     //Toast.makeText(getApplicationContext(), selectedItem, Toast.LENGTH_LONG).show();
 
                     if(treeSwitch==false) {
                         String[] data = selectedItem.split("\n");
                         sendAndReceiveToken(data[0]);
-                        horizontalScrollView.setVisibility(View.VISIBLE);
+                        Log.d("WeHealed Click", ":::"+data[0]);
+                        Log.d("WeHealed Click", ":::"+data[1]);
+                        Log.d("WeHealed Click", ":::"+data[2]);
+
+
                         treeSwitch=true;
 
                     } else {
@@ -453,10 +457,10 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                 TokenResponseJSON repo = response.body();
                 //Log.d("WeHealed", String.valueOf(repo.tokens[0].getText().getContent()));
                 Token[] tl = repo.getTokens();
-                //textView.setText(tl[0].getText().getContent());
-                Toast.makeText(getApplicationContext(),String.valueOf(tl.length),Toast.LENGTH_LONG).show();
 
+                //Toast.makeText(getApplicationContext(),String.valueOf(tl.length),Toast.LENGTH_LONG).show();
                 customView.drawTree(repo);
+                horizontalScrollView.setVisibility(View.VISIBLE);
             }
 
             @Override
