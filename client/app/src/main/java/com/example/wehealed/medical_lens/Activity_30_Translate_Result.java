@@ -9,15 +9,16 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
@@ -28,10 +29,6 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -71,8 +68,11 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
     ListView translatedSentenceListView;
     TranslatedSentenceListAdapter translatedSentenceListViewAdapter;
 
+    HorizontalScrollView horizontalScrollView = null;
+
     TextView textView;
     CustomView customView;
+    Boolean treeSwitch = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,11 +111,10 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
         findViewById(R.id.button_go_human_translation_request_activity).setOnClickListener(mClickListener);
         findViewById(R.id.button_translation_warning).setOnClickListener(mClickListener);
         findViewById(R.id.button_request_again).setOnClickListener(mClickListener);
-        findViewById(R.id.buttonForTree).setOnClickListener(mClickListener2);
 
         buttonRequestAgain = (Button)findViewById(R.id.button_request_again);
 
-        HorizontalScrollView vv = (HorizontalScrollView)findViewById(R.id.horizontalScrollView);
+        horizontalScrollView = (HorizontalScrollView)findViewById(R.id.horizontalScrollView);
         //vv.requestDisallowInterceptTouchEvent(true);
         //vv.addView(customView);
         //customView.getParent().requestDisallowInterceptTouchEvent(true);
@@ -387,7 +386,29 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                     translatedSentenceListViewAdapter.addItem(item);
                 }
             }
+
             translatedSentenceListView.setAdapter(translatedSentenceListViewAdapter);
+            translatedSentenceListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    String selectedItem = (String) parent.getItemAtPosition(position);
+                    Log.d("WeHealed Click", selectedItem);
+                    //Toast.makeText(getApplicationContext(), selectedItem, Toast.LENGTH_LONG).show();
+
+                    if(treeSwitch==false) {
+                        String[] data = selectedItem.split("\n");
+                        sendAndReceiveToken(data[0]);
+                        horizontalScrollView.setVisibility(View.VISIBLE);
+                        treeSwitch=true;
+
+                    } else {
+                        horizontalScrollView.setVisibility(View.INVISIBLE);
+                        treeSwitch=false;
+                    }
+
+                }
+            });
 
             // TODO : 서버 수신 데이터 -> Summary 표시
         }
@@ -428,21 +449,11 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                 .show();
     }
 
-    Button.OnClickListener mClickListener2 = new View.OnClickListener() {
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.buttonForTree:
-                    sendAndReceiveToken("I am a boy");
-                    break;
-            }
-        }
-    };
-
     public void sendAndReceiveToken(final String text) {
-        String URL = "https://wehealedapi2.run.goorm.io/api/";
+        //String URL = "https://wehealedapi2.run.goorm.io/api/";
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(URL)
+                .baseUrl(RetrofitService.requestBaseURL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
