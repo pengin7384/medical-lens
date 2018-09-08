@@ -100,7 +100,7 @@ public class CustomView extends View {
                 //canvas.drawText(tl[i].getText().getContent(),base_x+index*textSize,base_Y+200,pnt);
                 int num = Integer.parseInt(tl[i].getDependency_edge().getLabel());
 
-                drawPosText(canvas, label[num], base_x+index*textSize,base_Y+100,50,Color.YELLOW);
+                drawPosText(canvas, label[num], base_x+index*textSize,base_Y+100,50,Color.rgb(200,96,35));
                 drawPosText(canvas, tl[i].getText().getContent(), base_x+index*textSize,base_Y+200,70, Color.BLACK);
                 drawPosText(canvas, pos_tag[tl[i].getPart_of_speech().getTag()], base_x+index*textSize,base_Y+300,30, Color.RED);
 
@@ -117,7 +117,7 @@ public class CustomView extends View {
                     if(distance<0) {
                         distance = -1 * distance;
                     }
-                    drawFunc(canvas, start_x[i]+pxToDp(tl[i].getText().getContent().length()/2), 400, start_x[target_index]+pxToDp(tl[target_index].getText().getContent().length()/2), 400, distance);
+                    drawFunc(canvas, start_x[i]+pxToDp(tl[i].getText().getContent().length()/2), base_Y, start_x[target_index]+pxToDp(tl[target_index].getText().getContent().length()/2), base_Y, distance);
                 }
 
             }

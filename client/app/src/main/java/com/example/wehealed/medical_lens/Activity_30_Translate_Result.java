@@ -18,6 +18,7 @@ import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
@@ -72,8 +73,11 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
     ListView translationResultListView;
     ArrayAdapter translationResultListViewAdapter;
 
+    HorizontalScrollView horizontalScrollView = null;
+
     TextView textView;
     CustomView customView;
+    Boolean treeSwitch = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,11 +116,10 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
         findViewById(R.id.button_go_human_translation_request_activity).setOnClickListener(mClickListener);
         findViewById(R.id.button_translation_warning).setOnClickListener(mClickListener);
         findViewById(R.id.button_request_again).setOnClickListener(mClickListener);
-        findViewById(R.id.buttonForTree).setOnClickListener(mClickListener2);
 
         buttonRequestAgain = (Button)findViewById(R.id.button_request_again);
 
-        HorizontalScrollView vv = (HorizontalScrollView)findViewById(R.id.horizontalScrollView);
+        horizontalScrollView = (HorizontalScrollView)findViewById(R.id.horizontalScrollView);
         //vv.requestDisallowInterceptTouchEvent(true);
         //vv.addView(customView);
         //customView.getParent().requestDisallowInterceptTouchEvent(true);
@@ -372,6 +375,27 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                 translationResultListViewAdapter.add(sentence);
             }
             translationResultListView.setAdapter(translationResultListViewAdapter);
+            translationResultListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    String selectedItem = (String) parent.getItemAtPosition(position);
+                    Log.d("WeHealed Click", selectedItem);
+                    //Toast.makeText(getApplicationContext(), selectedItem, Toast.LENGTH_LONG).show();
+
+                    if(treeSwitch==false) {
+                        String[] data = selectedItem.split("\n");
+                        sendAndReceiveToken(data[0]);
+                        horizontalScrollView.setVisibility(View.VISIBLE);
+                        treeSwitch=true;
+
+                    } else {
+                        horizontalScrollView.setVisibility(View.INVISIBLE);
+                        treeSwitch=false;
+                    }
+
+                }
+            });
 
             // TODO : 서버 수신 데이터 -> Summary 표시
         }
@@ -411,16 +435,6 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                 .setPositiveButton(R.string.ok, listener)
                 .show();
     }
-
-    Button.OnClickListener mClickListener2 = new View.OnClickListener() {
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.buttonForTree:
-                    sendAndReceiveToken("I am a boy");
-                    break;
-            }
-        }
-    };
 
     public void sendAndReceiveToken(final String text) {
         String URL = "https://wehealedapi2.run.goorm.io/api/";
