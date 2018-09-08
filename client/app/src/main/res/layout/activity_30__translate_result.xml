@@ -91,21 +91,30 @@
 
     </ListView>
 
+    <Button
+        android:id="@+id/buttonForTree"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="280dp"
+        android:layout_marginTop="80dp"
+        android:text="Tree"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView"
-        android:layout_width="300dp"
+        android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="164dp"
+        android:layout_marginTop="8dp"
         android:background="@color/blue"
         android:fillViewport="true"
         android:scrollbars="horizontal"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.882"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/toolbar_translate_result">
+        app:layout_constraintTop_toTopOf="@+id/toolbar_translate_result"
+        app:layout_constraintVertical_bias="1.0">
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/scene_container"
@@ -116,22 +125,12 @@
                 android:id="@+id/customView"
                 android:layout_width="2000dp"
                 android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
                 android:focusable="false" />
         </RelativeLayout>
 
     </HorizontalScrollView>
-
-    <Button
-        android:id="@+id/buttonForTree"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="280dp"
-        android:layout_marginTop="80dp"
-        android:text="Tree"
-        android:visibility="invisible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
 
     <!--
             <HorizontalScrollView

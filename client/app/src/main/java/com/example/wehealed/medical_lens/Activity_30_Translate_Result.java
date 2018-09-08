@@ -251,6 +251,7 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 
     // 서버로 번역을 요청한다
     // Post + Json 방식
+
     public void sendAndReceiveMachineTranslationResult() {
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -264,6 +265,7 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
         for(int i=0; i<originalSentenceArrayList.size(); i++) {
             Sentence s = new Sentence(i+1,originalSentenceArrayList.get(i),"", "");
             sentences[i] = s;
+            Log.d("WeHealed Trans", s.getOriginal_sentence());
         }
 
         MachineTranslationRequestJSON requestJSON = new MachineTranslationRequestJSON(pictureFileName, sentences);
@@ -273,7 +275,7 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
         }*/
 
         // TODO : 최신버전의 서버 API 를 호출한다
-        Call<MachineTranslationResponseJSON> call = retrofitService.getJSON_V5(requestJSON);
+        Call<MachineTranslationResponseJSON> call = retrofitService.getJSON(requestJSON);
         call.enqueue(new Callback<MachineTranslationResponseJSON>() {
             @Override
             public void onResponse(Call<MachineTranslationResponseJSON> call, Response<MachineTranslationResponseJSON> response) {

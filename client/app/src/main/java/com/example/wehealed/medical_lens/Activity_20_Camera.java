@@ -324,6 +324,7 @@ public final class Activity_20_Camera extends AppCompatActivity {
                 }
                 catch (Exception e) {
                     Log.i(Constants.LOG_TAG, e.toString());
+
                 }
                 finally {
                     try {
