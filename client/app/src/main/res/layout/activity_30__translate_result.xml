@@ -7,6 +7,7 @@
     tools:context=".Activity_30_Translate_Result">
 
 
+
     <Button
         android:id="@+id/button_request_again"
         android:layout_width="wrap_content"
@@ -20,6 +21,7 @@
         android:id="@+id/toolbar_translate_result"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:titleTextColor="@android:color/white"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme" />
@@ -42,7 +44,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="16dp"
         android:text="@string/translation_warning"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -73,24 +75,41 @@
             app:layout_constraintTop_toBottomOf="@+id/toolbar_translate_result" />
     </ScrollView>
 
+    <!--android:divider="#ffcc22"-->
+    <!--android:dividerHeight="1.5dp"-->
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_centerInParent="true"
+        android:background="#a4a4a4"
+        app:layout_constraintTop_toBottomOf="@+id/listView_translation_result"
+         />
     <ListView
         android:id="@+id/listView_translation_result"
         android:layout_width="match_parent"
-        android:layout_height="232dp"
+        android:layout_height="320dp"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
         android:choiceMode="singleChoice"
-        android:divider="#ffcc22"
-        android:dividerHeight="1.5dp"
+        android:divider="#a4a4a4"
+        android:dividerHeight="1dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/button_go_human_translation_request_activity"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/scrollView3"
         app:layout_constraintVertical_bias="0.075">
-
     </ListView>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_centerInParent="true"
+        android:background="#a4a4a4"
+        app:layout_constraintBottom_toTopOf="@+id/listView_translation_result"/>
 
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView"
@@ -140,5 +159,25 @@
                     />
             </HorizontalScrollView>-->
 
+
+    <TextView
+        android:id="@+id/summaryTextView"
+        android:layout_width="match_parent"
+        android:layout_height="320dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:background="#FFFFFF"
+        android:choiceMode="singleChoice"
+        android:divider="#a4a4a4"
+        android:dividerHeight="1dp"
+        android:gravity="center_vertical|center_horizontal"
+        android:text="sdf"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/button_go_human_translation_request_activity"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView3"
+        app:layout_constraintVertical_bias="0.075" />
 
 </android.support.constraint.ConstraintLayout>

@@ -6,12 +6,14 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.text.util.Linkify;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.File;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TranslatedSentenceItemView extends LinearLayout {
@@ -47,8 +49,29 @@ public class TranslatedSentenceItemView extends LinearLayout {
         textView_translated_sentence_by_wehealed.setText(translated_sentence_by_wehealed);
     }
 
-    public void applyLink(Pattern pattern, String url, Linkify.TransformFilter filter) {
-        Linkify.addLinks(textView_translated_sentence_by_wehealed, pattern, url, null, filter);
+    public void applyLink(Pattern pattern, String matchingUrl) {
+        /*
+        Log.d("TestTest","pattern:"+pattern.toString());
+        Log.d("TestTest","url:"+url);*/
+
+
+
+        CustomFilter filter = new CustomFilter(matchingUrl);
+
+        Linkify.addLinks(textView_translated_sentence_by_wehealed, pattern, "", null, filter);
+    }
+
+    class CustomFilter implements Linkify.TransformFilter {
+        String matchingUrl;
+        CustomFilter(String matchingUrl) {
+            super();
+            this.matchingUrl = matchingUrl;
+        }
+
+        @Override
+        public String transformUrl(Matcher match, String url) {
+            return matchingUrl;
+        }
     }
 
 }

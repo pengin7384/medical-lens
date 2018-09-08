@@ -10,6 +10,7 @@
         android:id="@+id/textView_original_sentence"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
         android:text="Moderate rheumatic MS(MVA = 1.4/1.1cm2 by PHT/Planimetry, Mean PG = 6mmHg)."
         android:textColor="@android:color/darker_gray"
         android:textSize="18sp" />
@@ -19,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="5dp"
         android:text="중등 류마티스 성 MS (MVA = PH / PL 측정법에 의한 MVA = 1.4 / 1.1cm2, 평균 PG = 6mmHg)."
         android:textColor="@android:color/holo_orange_dark"
         android:textSize="18sp"

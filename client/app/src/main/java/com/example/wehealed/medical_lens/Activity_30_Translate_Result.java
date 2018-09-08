@@ -8,6 +8,7 @@ import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -57,6 +58,7 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
     boolean isToRetryTranslation = false;
 
     Button buttonRequestAgain;
+    Button buttonSummary;
 
     ImageView pictureImageView;
 //    TextView machineTranslateResultTextView;
@@ -73,6 +75,8 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
     TextView textView;
     CustomView customView;
     Boolean treeSwitch = false;
+    Boolean summarySwitch = false;
+    TextView summaryTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +108,7 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 
         //photoView = (PhotoView)findViewById(R.id.photo_view);
 
+
         translatedSentenceListView = (ListView)findViewById(R.id.listView_translation_result);
         translatedSentenceListViewAdapter = new TranslatedSentenceListAdapter(this);
         translatedSentenceListView.setAdapter(translatedSentenceListViewAdapter);
@@ -111,7 +116,10 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
         findViewById(R.id.button_go_human_translation_request_activity).setOnClickListener(mClickListener);
         findViewById(R.id.button_translation_warning).setOnClickListener(mClickListener);
         findViewById(R.id.button_request_again).setOnClickListener(mClickListener);
-
+        summaryTextView = (TextView)findViewById(R.id.summaryTextView);
+        /*
+        buttonSummary = (Button)findViewById(R.id.button_translation_warning)  ;
+        buttonSummary.setOnClickListener(mClickListener);*/
         buttonRequestAgain = (Button)findViewById(R.id.button_request_again);
 
         horizontalScrollView = (HorizontalScrollView)findViewById(R.id.horizontalScrollView);
@@ -386,6 +394,7 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                     translatedSentenceListViewAdapter.addItem(item);
                 }
             }
+            translatedSentenceListView.setVisibility(View.VISIBLE);
 
             translatedSentenceListView.setAdapter(translatedSentenceListViewAdapter);
             translatedSentenceListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -437,13 +446,34 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                     startActivity(intent);
                     break;
                 case R.id.button_translation_warning :
-                    showTranslationWarning();
+                    //showTranslationWarning();
+                    summaryTextView.setBackgroundColor(Color.LTGRAY);
+
+                    summaryTextView.setTextColor(Color.BLACK);
+                    summaryTextView.setBackgroundColor(Color.WHITE);
+                    summaryTextView.setTextSize(30);
+                    //summaryTextView.setBackgroundColor(Color.parseColor("#55FF0000"));
+
+                    if(summaryText=="" || summaryText==null) {
+                        break;
+                    }
+
+                    if(summarySwitch==false) {
+                        summaryTextView.setText(summaryText);
+                        summaryTextView.setVisibility(View.VISIBLE);
+                        summarySwitch=true;
+
+                    } else {
+                        summaryTextView.setVisibility(View.INVISIBLE);
+                        summarySwitch=false;
+                    }
                     break;
                 case R.id.button_request_again :
                     isToRetryTranslation = false;
                     //buttonRequestAgain.setEnabled(isToRetryTranslation);
                     sendAndReceiveMachineTranslationResult();
                     break;
+
             }
         }
     };
@@ -500,16 +530,9 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 
         ArrayList<Sentence> items = new ArrayList<Sentence>();
         DescribingURL[] urls;
-        Linkify.TransformFilter filter;
 
         public TranslatedSentenceListAdapter(Context context) {
             mContext = context;
-            filter = new Linkify.TransformFilter() {
-                @Override
-                public String transformUrl(Matcher match, String url) {
-                    return "";
-                }
-            };
         }
 
         public void setUrls(DescribingURL[] urls) {
@@ -518,8 +541,7 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return Math.min(items.size(), 10);
-            //return items.size();
+            return items.size();
         }
 
         public void clear() {
@@ -564,7 +586,7 @@ public class Activity_30_Translate_Result extends AppCompatActivity {
                         for (int i = 0; i < urls.length; i++) {
                             Pattern pattern = Pattern.compile(urls[i].getKey());
                             itemView.applyLink(
-                                    pattern, urls[i].getUrl(), filter
+                                    pattern, urls[i].getUrl()
                             );
                         }
                     }

@@ -24,7 +24,7 @@
             android:theme="?attr/actionBarTheme"
             app:layout_constraintTop_toTopOf="parent"
             app:title="Medical Lens"
-            app:titleTextColor="@android:color/holo_blue_bright" />
+            app:titleTextColor="@android:color/white" />
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/constraintLayout"
@@ -35,52 +35,91 @@
             tools:layout_editor_absoluteX="0dp">
 
             <ImageView
-                android:id="@+id/imageView3"
+                android:id="@+id/button_camera"
                 android:layout_width="105dp"
                 android:layout_height="95dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginStart="28dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@android:drawable/ic_menu_camera" />
 
-            <Button
-                android:id="@+id/button_gallery"
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginEnd="40dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="32dp"
-                android:text="gallery"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toEndOf="@+id/button_camera"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/button_camera"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginStart="148dp"
-                android:layout_marginTop="32dp"
-                android:text="Camera"
+                android:layout_marginLeft="69dp"
+                android:layout_marginTop="100dp"
+                android:text="카메라 촬영"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/button_gallery"
+                android:layout_width="105dp"
+                android:layout_height="95dp"
+                android:layout_marginEnd="50dp"
+                android:layout_marginTop="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@android:drawable/ic_menu_gallery" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="58dp"
+                android:layout_marginTop="100dp"
+                android:text="이미지 불러오기"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@android:drawable/ic_menu_gallery" />
+            <!---->
+            <!--<Button-->
+            <!--android:id="@+id/button_gallery"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center_horizontal"-->
+            <!--android:layout_marginEnd="40dp"-->
+            <!--android:layout_marginStart="8dp"-->
+            <!--android:layout_marginTop="32dp"-->
+            <!--android:text="gallery"-->
+            <!--app:layout_constraintEnd_toEndOf="parent"-->
+            <!--app:layout_constraintHorizontal_bias="1.0"-->
+            <!--app:layout_constraintStart_toEndOf="@+id/button_camera"-->
+            <!--app:layout_constraintTop_toTopOf="parent" />-->
+
+            <!--<Button-->
+            <!--android:id="@+id/button_camera"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center_horizontal"-->
+            <!--android:layout_marginStart="148dp"-->
+            <!--android:layout_marginTop="32dp"-->
+            <!--android:text="Camera"-->
+            <!--app:layout_constraintStart_toStartOf="parent"-->
+            <!--app:layout_constraintTop_toTopOf="parent" />-->
         </android.support.constraint.ConstraintLayout>
 
+        <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="321dp"-->
+        <!--android:layout_marginBottom="8dp"-->
+        <!--android:orientation="vertical"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/constraintLayout"-->
+        <!--app:layout_constraintVertical_bias="0.24"-->
+        <!--tools:layout_editor_absoluteX="0dp">-->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="337dp"
-            android:layout_marginBottom="8dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
-            tools:layout_editor_absoluteX="74dp">
-
+        android:layout_width="match_parent"
+        android:layout_height="450dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.24"
+        tools:layout_editor_absoluteX="0dp">
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp">
@@ -111,14 +150,27 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-
             </android.support.constraint.ConstraintLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_centerInParent="true"
+                android:background="#a4a4a4" />
 
             <ListView
                 android:id="@+id/history_listview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:choiceMode="multipleChoice" />
+                android:choiceMode="multipleChoice"
+                android:divider="#a4a4a4"
+                android:dividerHeight="1dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_centerInParent="true"
+                android:background="#a4a4a4" />
 
         </LinearLayout>
 

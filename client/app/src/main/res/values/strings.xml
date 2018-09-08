@@ -30,7 +30,7 @@
 
     <string name="translatation_history">Translation History</string>
     <string name="human_translation_request">전문 의료번역 의뢰하기</string>
-    <string name="translation_warning">주의사항</string>
+    <string name="translation_warning">요약</string>
     <string name="translation_warning_detail">해석 결과에 책임지지않습니다</string>
     <string name="clear_history">Clear</string>
     <string name="clear_history_confirm">의료번역 이력을 삭제하시겠습니까?</string>

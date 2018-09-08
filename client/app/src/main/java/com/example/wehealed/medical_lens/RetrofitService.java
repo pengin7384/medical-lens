@@ -22,9 +22,12 @@ public interface RetrofitService {
             @Query("text") String text
     );
 
+    @POST("request_translate_v6/")
+    Call<MachineTranslationResponseJSON> getJSON(@Body MachineTranslationRequestJSON machineTranslationRequestJSON);
+
     //@FormUrlEncoded
     @POST("request_translate_v5/")
-    Call<MachineTranslationResponseJSON> getJSON(@Body MachineTranslationRequestJSON machineTranslationRequestJSON);
+    Call<MachineTranslationResponseJSON> getJSON_v5(@Body MachineTranslationRequestJSON machineTranslationRequestJSON);
 
     //@FormUrlEncoded
     @POST("request_translate_test/")
