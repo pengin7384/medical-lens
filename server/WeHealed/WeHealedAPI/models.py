@@ -17,7 +17,7 @@ class Dictionary(models.Model):
 
 # 설명 url
 class Pedia(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=100)
     url = models.CharField(max_length=1000)
     score = models.IntegerField(default=10)
     reply_total = models.IntegerField(default=0)

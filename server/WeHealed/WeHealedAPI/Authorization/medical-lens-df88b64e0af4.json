@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "medical-lens",
+  "private_key_id": "df88b64e0af458f572b350761632beb4fe41f092",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDew8mPHivtHrvS\neAEvWdj1MeYKMjAx2H0Umk7Seqt4kFof7hEzKa8paQUMflTduaVEfkNrXTJSSl65\nkgwros4vIx8THm6nrdLHLqGAomnINC85UVwsVD9uqFxq1flK4iaw8lXlJU+4fRh4\nN+GyQhkwW9/vBFQhPnr6nlp5AD1AY+sPuRL1alZFQwvL2Ri+XUBYBN60Riwl893G\nK1LirD4CdsbDFoYSnzis2JrMMSQ1FZ81iUwiq22dpomYSB+FIY6lRxT3bd/SBN8X\nWcmzrV9BD/JfRCyfsXQ9Q8oH46r+ULmeSEub/bn5h3K1aVyAKz89U6wA0QHuB6UN\ndOi964LPAgMBAAECggEAMw1kxo9wGrY17kzBXMQ3FC583W5WHD5UoCGjGdqyLH3M\noc+yEmslsRRX616SfYQby6AyPEtOCozvu5CsiF2V6jie2Qda7cPI8AwQSEYwfwjy\nn6y1NpWSOf6Mu5FRQielHV1UcSEFba8Bqh+Ico1yb2JG5mS0ETBcB869xkhXQUeX\nb5q+MMQCRq3e1yYdzhvj456hmJpR4Zq808+VSskq4Rx12M7DPFRXwhp29zbx/Xit\n4XwgUEzX1gqwS9lwBv9yImvnosaY7Lz+VVeIrqZsJsI88ztdYM+Vgx0fbCHtPJuK\nCmMZqJr6z6wgOpsgd5TQFet2RQ6KUx9DroEztie1oQKBgQDzXMyQ84GWobXd9MaY\nJIviu1+yShCXxBnl1Gwqxn1NbaJU9cJxDGOTcVHasBaJSo5MWT2IM2pJs61nLntv\nzFOkrsKC6lbqEwo3EkrPVfiOaz2qnR4itkCYYqqQQOu7jEPCAjeogT5mnlcvgS7H\nJfXib52zXNvSPn13YRQQuSREbwKBgQDqVSrgj80iwgzVZVXCwVloDS5lKRv2RSes\n9Mg7Kweh36QU2pH2I1xYBZXRDIkIdD7Pcc9t2kDBJJsaRhzmZKxRIrjcsclrymIf\nsSruOiqukpu3nzxu7oMiL0gpUP9cRixi4Wh+BUk1ZdwFjwB4CnGjOA8pdKMNAYFa\nSpIDd7GXoQKBgASZ0YhAAkgtwHl0wjhoIHjl3/ZH7i5gV7j/nhfk7sOC+hmvF8D5\nYfyMnOaMg7COx0fsO/ySNEU2b2XO/Cht7XrkjurYsVH1kDDgWKe40V0n69+I3uP7\nHBeFbgISKCLAkRte3VyDLQHVpoJQZ+j977sbLxkP/VvpMIgMPsveJDBjAoGAGBIf\nkWm0HLnqL5F1Ocg6suGHvoR2htmbtbx/RPSqmAotBKdfDvWa6r/IH+01tlSajxyV\nvicJN83W0OAa39+/g6YZbzIkCpqDcdX1HvuCnuQYcsg8oPiHJ9/LfdMAKC5dKNsW\nrLtGReHss/V4itwnyCheBlgg15kr/GZkkU6eQ4ECgYA9FVXLyZnpVMnkvg2IJgqN\nuItf9KTDRGM4spiSoNmxt9x57QpihxuaY/akDVc+VhsvGANp1qAX49zJzI9Und2m\neLFN1IjbkYb8/I3WqeFhCpUuhT7zhDhbvRaA9tcStoVXtuwVPzWkJ2NbpYqRCWTl\n1T/B43OMopffqgba+SKn3g==\n-----END PRIVATE KEY-----\n",
+  "client_email": "tekseon-shin@medical-lens.iam.gserviceaccount.com",
+  "client_id": "101918114328657075938",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/tekseon-shin%40medical-lens.iam.gserviceaccount.com"
+}

@@ -92,3 +92,17 @@ def receive_result(request):
 
     else:
         return JsonResponse({'result': 'fail', 'reason': 'Try POST Method please'})
+
+    
+def check_callback(request):
+    dic = Dictionary.objects
+    cp_transaction_id = request.GET.get('cp_transaction_id', '')
+    if len(cp_transaction_id) == 0:
+        return JsonResponse({'result': 'fail', 'reason': 'Input cp_transaction_id'})
+    
+    try:
+        flitto_callback_data = FlittoCallbackDB.objects.get(cp_transaction_id=cp_transaction_id)
+    except FlittoCallbackDB.DoesNotExist:
+        return JsonResponse({'result': 'success', 'reason': False})
+    
+    return JsonResponse({'result': "success", 'reason': True})

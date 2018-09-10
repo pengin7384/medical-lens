@@ -1,0 +1,20 @@
+{
+    "picture_file_name": "2018_09_06_22_33_12_472.jpg", 
+    "sentences": [
+        {
+            "sentence_number": 1, 
+            "original_sentence": "Lung cancer", 
+            "translated_sentence": ""
+        }, 
+        {
+            "sentence_number": 2, 
+            "original_sentence": "Right Lower Lobe", 
+            "translated_sentence": ""
+        },
+        {
+            "sentence_number": 3, 
+            "original_sentence": "No RWMA of LV", 
+            "translated_sentence": ""
+        }
+    ]
+}

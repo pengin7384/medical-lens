@@ -31,11 +31,12 @@ cur = conn.cursor()
  
 # SQL 쿼리 실행
 # cur.execute("SELECT * FROM WeHealedAPI_dictionary as Dic WHERE Dic.original_text=='RWMA'")
-cur.execute("SELECT pedia.id, pedia.name, pedia.dictionary, Dic.id, Dic.abbreviation_text, Dic.original_text, Dic.organization_text FROM WeHealedAPI_pedia as pedia, WeHealedAPI_dictionary as Dic WHERE pedia.name == Dic.abbreviation_text")
+# cur.execute("SELECT pedia.id, pedia.name, pedia.dictionary, Dic.id, Dic.abbreviation_text, Dic.original_text, Dic.organization_text FROM WeHealedAPI_pedia as pedia, WeHealedAPI_dictionary as Dic WHERE pedia.name == Dic.abbreviation_text")
 # organization_txt == heart -> code=10000 / lung -> code=20000로 바꿔야함
 # cur.execute("SELECT pedia.id, pedia.name, pedia.dictionary, Rule.id, Rule.origin_sentence FROM WeHealedAPI_pedia as pedia, WeHealedAPI_RuleDataSet as Rule WHERE pedia.name == Rule.origin_sentence")
-
-
+# cur.execute("SELECT * FROM WeHealedAPI_pedia as pedia WHERE pedia.name=='MS'")
+cur.execute("SELECT * FROM WeHealedAPI_pedia as pedia")
+# cur.execute("SELECT * FROM WeHealedAPI_dictionary as dic WHERE dic.abbreviation_text=='TR'")
 
 # 데이타 Fetch
 rows = cur.fetchall()

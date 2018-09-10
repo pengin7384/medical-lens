@@ -1,0 +1,55 @@
+{
+    "picture_file_name": "2018_09_06_22_33_12_472.jpg", 
+    "sentences": [
+        {
+            "sentence_number": 1, 
+            "original_sentence": "Normal LV cavity dimension with Preserved systolic function calculated EF 53-58% Enlarged both atria.", 
+            "translated_sentence": ""
+        },
+        {
+            "sentence_number": 2,
+            "original_sentence": "No RWMA of LV.", 
+            "translated_sentence": ""
+        }, 
+        {
+            "sentence_number": 3, 
+            "original_sentence": "Normal LV wall thickness.", 
+            "translated_sentence": ""
+        }, 
+        {
+            "sentence_number": 4, 
+            "original_sentence": "Moderate rheumatic MS(MVA = 1.4/1.1cm2 by PHT/Planimetry, Mean PG = 6mmHg).", 
+            "translated_sentence": ""
+        }, 
+        {
+            "sentence_number": 5, 
+            "original_sentence": "Mild to moderate rheumatic AR(ll) with mild AS.", 
+            "translated_sentence": ""
+        }, 
+        {
+            "sentence_number": 6, 
+            "original_sentence": "Severe TR due to dilated tricuspid valve annulus and coaptation failure.", 
+            "translated_sentence": ""
+        }, 
+        {
+            "sentence_number": 7, 
+            "original_sentence": "No intracardiac mass, thrombi nor pericardial effusion.", 
+            "translated_sentence": ""
+        }, 
+        {
+            "sentence_number": 8, 
+            "original_sentence": "Dilated ascending aorta(42mm).", 
+            "translated_sentence": ""
+        }, 
+        {
+            "sentence_number": 9, 
+            "original_sentence": "Small LR shunt was seen at the Interatrial septum ==> suggestive of PMV puncture site.", 
+            "translated_sentence": ""
+        }, 
+        {
+            "sentence_number": 10, 
+            "original_sentence": "Conclusion) Slightly increased RA cavity size, otherwise, no significant interval change c/w previous exam.", 
+            "translated_sentence": ""
+        }
+    ]
+}

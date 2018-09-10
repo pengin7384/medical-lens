@@ -20,14 +20,23 @@ from django.conf.urls.static import static
 from WeHealedAPI import views, api, flitto, welcome
 from WeHealed import settings
 
+
+
 urlpatterns = [
     #url(r'', welcome.home, name='index'),
     url(r'^admin/', admin.site.urls),
     url(r'^test/', views.detail),
     url(r'^api/substitution/', api.substitution),
-    url(r'^api/test', api.test),
-    url(r'^api/request_translate/', api.request_translate),
-    url(r'^api/token', api.token),
+    # url(r'^api/test', api.test),
+    url(r'^api/request_translate_test', api.request_translate_test),
+    # url(r'^api/request_translate_v2', api.request_translate_v2),
+    # url(r'^api/request_translate_v3', api.request_translate_v3),
+    url(r'^api/request_translate_v4', api.request_translate_v4),
+    url(r'^api/request_translate_v5', api.request_translate_v5),
+    url(r'^api/request_translate_v6', api.request_translate_v6),
+    url(r'^api/token', api.token),    
+    # url(r'^api/request_translate/', api.request_translate),
+
     url(r'^api/translate', api.trans),
     url(r'^dbinit/', views.dbinit),
     url(r'^api/url_recommend', api.url_recommend),
@@ -38,6 +47,8 @@ urlpatterns = [
     url(r'^api/rule', api.rule),
     url(r'^api/add_rule', api.add_rule),
     url(r'^api/flitto_receive_result', flitto.receive_result),
+    url(r'^api/flitto_response', flitto.receive_result),
+    url(r'^api/flitto_check_callback', flitto.check_callback),
     url(r'^api/image_upload/', api.image_upload)
 ]
 

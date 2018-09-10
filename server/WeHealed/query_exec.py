@@ -29,7 +29,7 @@ conn = sqlite3.connect("db.sqlite3")
 cur = conn.cursor()
  
 # SQL 쿼리 실행
-cur.execute("SELECT * FROM WeHealedAPI_dictionary")
+cur.execute("SELECT count(*) FROM WeHealedAPI_dictionary")
  
 # 데이타 Fetch
 rows = cur.fetchall()

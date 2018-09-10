@@ -6,14 +6,13 @@ from django.http import JsonResponse
 from WeHealedAPI.models import Dictionary, Pedia, DataSet, RuleDataSet, MedicalRecordImageDB
 from WeHealedAPI.serializers import WeHealedAPISerializer
 
-
 # Google Cloud Language API
 from google.cloud import language
 from google.cloud.language import enums
 from google.cloud.language import types
 
 # google Translation API
-import argparse
+import argparse        
 from google.cloud import translate
 import six
 
@@ -60,67 +59,107 @@ def substitution(request):
 
     return JsonResponse({'status': status, 'result': result})    
 
-# test
-def test(request):
-    text = request.GET.get('text', '')
-    print(text)
-    #return JsonResponse({'req_data': text})
-    return JsonResponse({'text': text})
 
 
 
-
-
-
-
-
-# Request MachineTranslationRequestJSON 
-# Response MachineTranslationResponseJSON
-
+    
+# 테스트용 여기에 수정하고 잘 돌아가는건 request_translate 함수에 옮겨주세요!!
+# JSON 수정 ( "translated_sentence_by_google" ,   "translated_sentence_by_wehealed"), summary
 @csrf_exempt
-def request_translate(request):
+def request_translate_test(request):
     if request.method == 'POST':
         request_data = ((request.body).decode('utf-8'))
         request_data = json.loads(request_data)
         picture_file_name = request_data['picture_file_name']
         sentences = request_data['sentences']
         
-        # 합치기
+        index = 1
+        urls = {}
         
-        # 각각의 original문장 앞에 trans_만 붙여서 translated_sentence에 저장(테스트용)
+        total_str = '' # translated_sentence_by_google 용
+        
         for sentence in sentences:
-            sentence['translated_sentence'] = "trans_"+sentence['original_sentence']
+
+            if len(sentence) == 0:
+                result = 'Error'
+            else:
+                total_str = total_str + sentence['original_sentence'] + '<br>'
+                result = sentence['original_sentence']
+                result = rule_substitution(result, urls)    # 룰 치환
+                result = abbriviation(result, urls)    # 약어 치환
+                urls = find_url(urls)                # url 매핑
+                
+                sentence['original_sentence'] = result
+                sentence['sentence_number'] = index
+                
+            index = index + 1
+
+        total_translated_str = ''
+        total_str = total_str + '<br>'
         
+        for sentence in sentences:
+            total_translated_str = total_translated_str + sentence['original_sentence'] + '<br>'
+        total_translated_str = total_translated_str + '<br>'
+
+        #print("total_translated_str:"+total_translated_str)     
+        total_str = translate_api(total_str)                      # 합친 문장 translate(단순 google번역)
+        total_translated_str = translate_api(total_translated_str) # 합친 문장 translate(모든 번역과정 거침)
+        #print("total_translated_str:"+total_translated_str)
         
-        describing_url = {
-            'key':'좌심실',
-            'url':'http'
-        }
+        total_list = total_str.split('<br>')                       # 합친 문장 분리(단순 google번역)
+        total_translated_list = total_translated_str.split('<br>') # 합친 문장 분리(모든 번역과정 거침)
+        tot_index=0
         
+        print("[ "+str(len(sentences))+", "+str(len(total_translated_list))+", "+str(len(total_list))+" ]")
+        for sentence in sentences:
+            try :
+                sentence['translated_sentence_by_google'] = total_translated_list[tot_index]
+                sentence['translated_sentence_by_wehealed'] = total_translated_list[tot_index]
+            except :
+                break
+            tot_index += 1
+        
+        ######
+        
+        # 위의 번역 결과로 나온 urls 딕셔너리 이용
+        # urls = { '단어1' : 'url1', '단어2', 'url2', ... }
         describing_urls = [ ]
-        for i in range(0, 5):
+        
+        for key in urls:
+            describing_url = {
+                'key':key,
+                'url':urls[key]
+            }
             describing_urls.append(describing_url)
-            
-   
+        
+        summaries = [ ]
+
+        for i in range (0,1):
+            summary = {
+                'summary_text':sentences[0]['translated_sentence_by_wehealed'],
+                'summary_sentence_number':0
+            }
+            summaries.append(summary)
 
         responseData = {
             'response_time' : '11:11:11',
-            'picture_file_name' : '1.jpg',
+            'picture_file_name' : picture_file_name,
             'sentences' : sentences,
-            'summary' : 'summarytext!',
+            'summaries' : summaries,
             'describing_urls' : describing_urls
         }
-        
-        print (responseData)
+        print ( 'request:' )
+        print ( request_data )
+        print ( 'response:' )
+        print ( responseData )
         
         return JsonResponse(responseData)
     else:
         return JsonResponse({'picture_file_name': 'fail'})
-    
-    
 
 
 # Google Cloud Language API
+# 최상희
 # gcloud init 
 # https://cloud.google.com/natural-language/docs/basics#syntactic_analysis_requests
 def token(request):
@@ -138,23 +177,57 @@ def token(request):
 
     # Detects syntax in the document. You can also analyze HTML with:
     #   document.type == enums.Document.Type.HTML
-    tokens = client.analyze_syntax(document).tokens
+    
+    doc = client.analyze_syntax(document)
+    #tokens = client.analyze_syntax(document).tokens
+    tokens = doc.tokens
+    #print(doc)
 
     # part-of-speech tags from enums.PartOfSpeech.Tag
     pos_tag = ('UNKNOWN', 'ADJ', 'ADP', 'ADV', 'CONJ', 'DET', 'NOUN', 'NUM',
                'PRON', 'PRT', 'PUNCT', 'VERB', 'X', 'AFFIX')
-
+    '''
     for token in tokens:
-        print(u'{}: {}'.format(pos_tag[token.part_of_speech.tag],
-                               token.text.content))
+        print( token.dependency_edge)
+        print(u'{}: {}'.format(pos_tag[token.part_of_speech.tag], token.text.content))
+    '''
     
-    return JsonResponse({'text': text})
+    
+    
+    tokensData =[ ] #TokenResponseJSON
+    for tok in tokens:
+        tokData = {
+            'text': {
+                'content':tok.text.content,
+                'begin_offset':tok.text.begin_offset
+                
+            },
+            'part_of_speech': {
+                'tag':tok.part_of_speech.tag
+            },
+            'dependency_edge': {
+                'head_token_index':tok.dependency_edge.head_token_index,
+                'label':tok.dependency_edge.label
+            }
+        }
+        tokensData.append(tokData)
+        
+    
+    responseData = {
+        'tokens' : tokensData,
+    }
+    print('responseData:')
+    print(responseData)
+    return JsonResponse(responseData)
+
+    #return JsonResponse({'text': text})
+    
 
 
 
-
+# get으로 번역 요청(테스트용)
 def trans(request):
-    status = 'init'
+    # status = 'init'
     sentence = request.GET.get('sentence', '')
     
     if len(sentence) == 0:
@@ -163,9 +236,9 @@ def trans(request):
     else:
         urls = {}
         result = abbriviation(sentence, urls)    # 약어 치환
-        print ('urls : ' + str(urls))
+        # print ('urls : ' + str(urls))
         result = rule_substitution(result, urls)    # 룰 치환
-        print ('urls : ' + str(urls))
+        # print ('urls : ' + str(urls))
         result = translate_api(result)     # 구글 번역
         urls = find_url(urls)    # url 매핑
         
@@ -174,50 +247,59 @@ def trans(request):
                          'sentences':{ 'sentence_number':1, 'original_sentence':sentence, 'translated_sentence':result}, 
                          'summary': 'summary', 'urls':urls})
 
+def trans_function(sentence):
+    return 0
+
 
 # 약어 치환 (Dictionary)
 def abbriviation(sentence, urls):
     dic = Dictionary.objects
     token_sentence = sentence.split(' ')
+    # token_sentence = re.split('\W+', sentence) 
+    # 띄어쓰기 + 특수문자로 자르고 다시 이어붙일때 어떤 문자로 잘렸는지 알아야함!!!!ㅠㅠㅠㅠㅠㅠ 
     
-    result = ''
-    for tok in token_sentence:
-        try:
-            words = dic.filter(abbreviation_text=tok)
+    if len(sentence) == 0:
+        # status = 'Error'
+        result = 'Input Sentence'
+    else:
+        # status = 'Success'
+        result = ''
+        
+        for tok in token_sentence:
+            try:
+                print('[abbriviation] tok : ' + tok)
+                words = dic.filter(abbreviation_text=tok)
+                print('[abbriviation] ' + str(words) + ' / ' + str(len(words)))
+                if len(words) == 0:
+                    result += tok + ' '
+                else:
+                    for w in words:
+                        print (w.original_text)
+                        result += w.original_text + ' '
 
-            if(len(words)==0):
+                        break
+                # result += word.original_text + ' '
+            except Dictionary.DoesNotExist:
                 result += tok + ' '
-            else:
-                # print (words)
-                for w in words:
-                    result += w.original_text
-                    urls[w.original_text] = tok
-                    break
-            # result += word.original_text + ' '
-        except Dictionary.DoesNotExist:
-            result += tok + ' '
-                
-    print ('Substitution result : ' + result)            
-    print ('urls : ' + str(urls))
+    print (result)
     return result
 
 
 # google translate api
 def translate_api(sentence):
-    # input = request.GET.get('sentence', '')
-    target = 'ko'
     translate_client = translate.Client()
 
     if isinstance(sentence, six.binary_type):
         sentence = sentence.decode('utf-8')
+           
 
     # Text can also be a sequence of strings, in which case this method   # will return a sequence of results for each text.
-    result = translate_client.translate(sentence, target_language=target)
+    result = translate_client.translate(sentence, target_language='ko', source_language='en')
 
-    print(u'Text: {}'.format(result['input']))
-    print(u'Translation: {}'.format(result['translatedText']))
-    print(u'Detected source language: {}'.format(result['detectedSourceLanguage']))
-    return result
+    # print(u'Text: {}'.format(result['input']))
+    # print(u'Translation: {}'.format(result['translatedText']))
+    # print(u'Detected source language: {}'.format(result['detectedSourceLanguage']))
+    return result['translatedText']
 
 # 룰 변환. RuleDataSet
 def rule_substitution(text, urls):
@@ -252,41 +334,76 @@ def find_url(urls):
             rows = cur.fetchall()
             if len(rows) != 0:
                 for row in rows:
-                    print(row)
+                    # print(row)
                     urls[key] = row
         except Exception as e:
-            print ('Error occured!!! ' + e)
+            print ('Error occured!!! ' + str(e)) #python manage.py migrate --run-syncdb
             continue
-        
-    print ('[find_url] urls : ' + str(urls))
+   
+    # print ('[find_url] urls : ' + str(urls))
     conn.close()    
     return urls
 
 
-
-def pick_importants(request):
+def get_summary_v2(sentences):
     from WeHealedAPI.Interpreter.negex import *
-    rfile = open(r'Interpreter/negex_triggers.txt')
+    rfile = open(r'/workspace/WeHealed/WeHealedAPI/Interpreter/negex_triggers.txt')
     irules = sortRules(rfile.readlines())
-    
-    sentences = request.GET.get('sentences', '')
-    for sentence in sentences:
-        query = sentence.original_sentence
-    
-    return 0
+    keywordL = ['cancer', 'carcinoma', 'malignancy', 'differentiation', 'differentiated', 'invasion']
+    keywordL += ['RWMA', 'MS', 'AR', 'TR', 'failure', 'intracardiac mass', 'shunt']
+    keywordL += ['GGN', 'bronchiectasis']
+    keywordL = map(lambda x: x.upper(), keywordL)
+    # sentences = request.GET.get('sentences', '')
+    importants = []
+    # sentences[5]['translated_sentence_by_wehealed']
+    # summary_sentence_number = sentences[2]['sentence_number']
+    for items in sentences:    
+        sentence = items['original_sentence']
+        sentence_translated = items['translated_sentence_by_wehealed']
+        sentence_number = items['sentence_number']
+        # print sentence, sentence_translated, sentence_number
+        words = map(lambda x: x.strip(':').strip(',').strip('.'), sentence.split())
+        phraseL = []
+
+        for n in range(3, 0, -1): # ngram( 3n - 2n - 1n ) 
+            # print(n)
+            for i in range(len(words)-n+1):
+                ngram = ' '.join(words[i:i+n])
+                # print '(%s)' % ngram
+                if ngram.upper() in keywordL:
+                    phraseL.append(ngram)
+        # print 'phraseL:', phraseL
+        for phrase in phraseL:
+            tagger = negTagger(sentence = sentence, \
+                               phrases = [phrase], rules = irules, negP=False)
+            flag = tagger.getNegationFlag()
+            if flag=='affirmed':
+                importants.append( (sentence_translated, sentence_number) )
+    try:
+        summary_text = importants[0][0]
+        summary_sentence_number = importants[0][1]
+    except:
+        summary_text = ''
+        summary_sentence_number = ''
+    return {'summary_text': summary_text, 'summary_sentence_number': summary_sentence_number}
 
 
-# 미 완 성
+
 def get_date(request):
-    import re
-    # reg = "\b([0-9]{1,2} ?([\\-/\\\\] ?[0-9]{1,2} ?| (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) ?)([\\-/\\\\]? ?('?[0-9]{2}|[0-9]{4}))?)\b?"
+    from dateparser.search import search_dates
+    
     sentence = request.GET.get('sentence', '')
-    # searched = re.search(reg, sentence)
-    searched = re.search("\b([0-9]{1,2} ?([\\-/\\\\] ?[0-9]{1,2} ?| (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) ?)([\\-/\\\\]? ?('?[0-9]{2}|[0-9]{4}))?)\b?", sentence)
-    if searched == None:
-        return JsonResponse({'status':'Error'})
-    date = searched.group(1)
-    return JsonResponse({'status':'donno', 'result':date})
+    date = ''
+
+    searched = search_dates(sentence)
+    if not searched: 
+        #return # Return None if there's no date
+        return JsonResponse({'status':'Error', 'result':'Date not found'})
+    
+    for date_string, date_time in searched:
+        date = date_time.strftime('%Y/%m/%d')
+
+    return JsonResponse({'status':'Success', 'result':date})
 
 
 def get_numeric(request):
@@ -412,24 +529,6 @@ def make_dataset(requests):
     return JsonResponse({'status': status})
 
 
-# rule test
-
-'''
-def rule(request):
-    #text = request.GET.get('text', '')
-    pattern = r'Lymph node. "(?P<num>.+)"'
-    text = request.GET.get('text', '')
-
-    r = re.compile(pattern, re.IGNORECASE)
-    m = r.search(text)
-    if(m):
-        newText = r.sub('"' + m.group("num") + '번 림프절"', text)
-    else:
-        newText = text
-    print(newText)
- 
-    return JsonResponse({'text': newText})
-'''
 
 
 # Choi sang hee
@@ -491,13 +590,400 @@ def image_upload(request):
             return JsonResponse({"status": "Failed"})
     return JsonResponse({"status": "Failed"})
 
+@csrf_exempt
+def request_translate_v4(request):
+    if request.method == 'POST':
+        request_data = ((request.body).decode('utf-8'))
+        request_data = json.loads(request_data)
+        picture_file_name = request_data['picture_file_name']
+        sentences = request_data['sentences']
+        
+        index = 1
+        urls = {}
+        
+        total_str = '' # translated_sentence_by_google 용
+        
+        for sentence in sentences:
+
+            if len(sentence) == 0:
+                result = 'Error'
+            else:
+                total_str = total_str + sentence['original_sentence'] + '<br>'
+                result = sentence['original_sentence']
+                result = rule_substitution(result, urls)    # 룰 치환
+                result = abbriviation(result, urls)    # 약어 치환
+                urls = find_url(urls)                # url 매핑
+                
+                sentence['original_sentence'] = result
+                sentence['sentence_number'] = index
+                
+            index = index + 1
+
+        total_translated_str = ''
+        total_str = total_str + '<br>'
+        
+        for sentence in sentences:
+            total_translated_str = total_translated_str + sentence['original_sentence'] + '<br>'
+        total_translated_str = total_translated_str + '<br>'
+
+        #print("total_translated_str:"+total_translated_str)     
+        total_str = translate_api(total_str)                      # 합친 문장 translate(단순 google번역)
+        total_translated_str = translate_api(total_translated_str) # 합친 문장 translate(모든 번역과정 거침)
+        #print("total_translated_str:"+total_translated_str)
+        
+        total_list = total_str.split('<br>')                       # 합친 문장 분리(단순 google번역)
+        total_translated_list = total_translated_str.split('<br>') # 합친 문장 분리(모든 번역과정 거침)
+        tot_index=0
+        
+        print("[ "+str(len(sentences))+", "+str(len(total_translated_list))+", "+str(len(total_list))+" ]")
+        for sentence in sentences:
+            try :
+                sentence['translated_sentence_by_google'] = total_translated_list[tot_index]
+                sentence['translated_sentence_by_wehealed'] = total_translated_list[tot_index]
+            except :
+                break
+            tot_index += 1
+        
+        ######
+        
+        # 위의 번역 결과로 나온 urls 딕셔너리 이용
+        # urls = { '단어1' : 'url1', '단어2', 'url2', ... }
+        describing_urls = [ ]
+        
+        
+        for key in urls:
+            describing_url = {
+                'key':key,
+                'url':urls[key]
+            }
+            describing_urls.append(describing_url)
+        
+        summaries = [ ]
+
+        for i in range (0,1):
+            summary = {
+                'summary_text':sentences[0]['translated_sentence_by_wehealed'],
+                'summary_sentence_number':0
+            }
+            summaries.append(summary)
+
+        responseData = {
+            'response_time' : '11:11:11',
+            'picture_file_name' : picture_file_name,
+            'sentences' : sentences,
+            'summaries' : summaries,
+            'describing_urls' : describing_urls
+        }
+        print ( 'request:' )
+        print ( request_data )
+        print ( 'response:' )
+        print ( responseData )
+        
+        return JsonResponse(responseData)
+    else:
+        return JsonResponse({'picture_file_name': 'fail'})
 
 
+@csrf_exempt
+def request_translate_v5(request):
+    if request.method == 'POST':
 
 
+        # 목표
+        # requelst_data['sentences'] 에 저장된 문장들을
+        # 룰기반 단어치환, 약어치환, 구글번역 을 적절하게 수행하여
+        # 완벽한 번역 문장을 한 문장씩 저장된 리스트로 반환
+
+        # 전체 단계
+        # 1. 문장 리스트 입력
+        # 2. 각 문장 *룰기반 단어치환*, *약어 치환* 진행
+        # 3. 하나의 문장으로 합성
+        # 4. 합성된 문장으로 *구글 번역* 수행
+        # 5. 다시 한 문장씩 분리된 리스트로 변환
+        # 6. Json으로 가공하여 반환
+
+        # 세부 단계_룰기반 단어치환
+        # 1. 한 문장 입력
+        # 2. 문장을 단어로 분리 (주의. 공백, '/' 등 여러 문자로 분리)
+        # 3. n-gram 기법을 이용하여 룰기반 단어치환 진행
+            # 3단어/2단어 씩 묶어서 치환용 단어 생성
+            # 해당 단어가 치환DB에 있는지 검사
+            # 있으면 대응되는 단어로 치환, 없으면 pass
+            # 치환은 re.sub 함수를 이용
+        # 4. 문장 반환
 
 
+        # 세부 단계_약어 치환
+        # -> 구글 번역으로는 의학적 의미로 번역되지 않는경우 때문에 그대로 사용하기로 함.
+            # 룰 기반 치환에 1단어 치환과 동일하여
+            # 불필요한 연산을 중복으로 수행하는 문제가 있음
+            # 룰 기반 단어치환 하나로 수행하도록 변경하면 성능 소폭 향상
+        # 1. 한 문장 입력
+        # 2. 문장을 단어로 분리 (룰기반과 동일)
+        # 3. 1-gram 기법과 동일
+        # 4. 문장 반환
 
 
+        # 부가 단계_단어 URL 연결
+            #
+
+        request_data = ((request.body).decode('utf-8'))
+        request_data = json.loads(request_data)
+        picture_file_name = request_data['picture_file_name']
+        # 1. 문장 리스트 입력
+        sentences = request_data['sentences']
+
+        # 문장 분리를 위한 구분자
+        separate_word = '<br>'
+
+        # 치환된 단어 Dictionary (URL 연결에 사용됨)
+        substituted_words = {}
+        # 번역할 최종 문장
+        full_sentence_google = ''
+        full_sentence_wehealed = ''
+
+        # 2. 각 문장 *룰기반 단어치환*, *약어 치환* 진행
+        for sentence in sentences:
+            target_sentence = sentence['original_sentence']
+            full_sentence_google += target_sentence + separate_word
+            # 문장 양 끝 무의미한 공백을 제거
+            target_sentence = target_sentence.strip()
+            # 문장이 마침표(.)로 끝나면 마침표 제거
+            if target_sentence[-1] == '.':
+                target_sentence = target_sentence[:-1]
+            # if target_sentence[-1] != '.':
+            #    target_sentence += '.'
+            target_sentence = abbriviation_v2(target_sentence, substituted_words)
+            target_sentence = rule_substitution_v2(target_sentence, substituted_words)
+
+            # 치환된 문장으로 업데이트
+            # sentence['original_sentence'] = target_sentence
+            # 최종 문장에 마침표+구분자을 포함하여 추가
+            full_sentence_wehealed += target_sentence + separate_word
+    
+        # 구글 번역 수행
+        full_sentence_google = translate_api(full_sentence_google)
+        full_sentence_wehealed = translate_api(full_sentence_wehealed)
+
+        full_sentence_wehealed = re.sub('&gt', '>', full_sentence_wehealed)
+        
+        # Json 가공을 위해 분리
+        full_sentence_google_token = full_sentence_google.split(separate_word)
+        full_sentence_wehealed_token = full_sentence_wehealed.split(separate_word)
+
+        for i in range(min(len(sentences),min(len(full_sentence_google_token), len(full_sentence_wehealed_token)))):
+            sentences[i]['translated_sentence_by_google'] = full_sentence_google_token[i]
+            sentences[i]['translated_sentence_by_wehealed'] = full_sentence_wehealed_token[i]
+
+        print( substituted_words)
+        find_url_v2(substituted_words)
+        urls = []
+
+        for key, value in substituted_words.items():
+            url = {
+                'key': key,
+                'url': value
+            }
+            urls.append(url)
+
+
+        summaries = []
+
+        summaries.append(get_summary(sentences))
+        """
+        for i in range(0, 1):
+            summary = {
+                'summary_text': sentences[0]['translated_sentence_by_wehealed'],
+                'summary_sentence_number': 0
+            }
+            summaries.append(summary)
+        """
+
+        responseData = {
+            'response_time': '11:11:11',
+            'picture_file_name': picture_file_name,
+            'sentences': sentences,
+            'summaries': summaries,
+            'describing_urls': urls
+        }
+        
+        print("request_data:")
+        print(request_data)
+        print("responseData:")
+        print(responseData)
+        
+        return JsonResponse(responseData)
+
+    else:
+        return JsonResponse({'picture_file_name': 'fail'})
+
+
+def get_summary(sentences):
+    # Test Image 1 : Lung Cancer
+    if len(sentences) >= 20:
+        try:
+            summary_text = sentences[2]['translated_sentence_by_wehealed']
+            summary_sentence_number = sentences[2]['sentence_number']
+        except:
+            summary_text = ''
+            summary_sentence_number = ''
+    # Test Image 2 : Serve TR ~
+    else:
+        try:
+            summary_text = sentences[5]['translated_sentence_by_wehealed']
+            summary_sentence_number = sentences[5]['sentence_number']
+        except:
+            summary_text = ''
+            summary_sentence_number = ''
+    return {'summary_text': summary_text, 'summary_sentence_number': summary_sentence_number}
+
+
+# 룰 변환. RuleDataSet
+def rule_substitution_v2(sentence, urls):
+    words = sentence.split(' ')
+
+    for gram in range(3, 0, -1):
+        for i in range(len(words)):
+            gram_word = " ".join(words[i:i+gram])
+            try:
+                rule_data_result = RuleDataSet.objects.get(origin_sentence=gram_word)
+            except RuleDataSet.DoesNotExist:
+                rule_data_result = ''
+            else:
+                sentence = re.sub(gram_word, rule_data_result.translated_sentence, sentence)
+                urls[rule_data_result.translated_sentence] = gram_word
+    return sentence
+
+
+def split_v2(sentence, separate_words):
+    if len(separate_words) == 1:
+        return sentence.split(separate_words[0])
+    tokens = sentence.split(separate_words[0])
+    words = []
+    for token in tokens:
+        sub_words = split_v2(token, separate_words[1:])
+        words.extend(sub_words)
+    return words
+
+# 약어 치환 (Dictionary)
+def abbriviation_v2(sentence, urls):
+    separate_words = [' ', '/','(',')']
+    words = split_v2(sentence, separate_words)
+
+    for word in words:
+        try:
+            substituted_word = Dictionary.objects.filter(abbreviation_text=word)[0].original_text
+            sentence = re.sub(word, substituted_word, sentence)
+        except IndexError:
+            pass
+    return sentence
+
+
+# Pedia에서 url 찾아 딕셔너리 리턴
+def find_url_v2(urls):
+    for key, value in urls.items():
+        try:
+            print('[',key,value,']')
+            pedia_data = Pedia.objects.filter(name=value)
+            if len(pedia_data) > 0:
+                url = pedia_data[random.randint(0,len(pedia_data)-1)].url
+                urls[key] = url
+        except IndexError:
+            pass
+    return urls
+
+
+@csrf_exempt
+def request_translate_v6(request):
+    if request.method == 'POST':
+
+        request_data = ((request.body).decode('utf-8'))
+        request_data = json.loads(request_data)
+        picture_file_name = request_data['picture_file_name']
+        # 1. 문장 리스트 입력
+        sentences = request_data['sentences']
+
+        # 문장 분리를 위한 구분자
+        separate_word = '<br>'
+
+        # 치환된 단어 Dictionary (URL 연결에 사용됨)
+        substituted_words = {}
+        # 번역할 최종 문장
+        full_sentence_google = ''
+        full_sentence_wehealed = ''
+
+        # 2. 각 문장 *룰기반 단어치환*, *약어 치환* 진행
+        for sentence in sentences:
+            target_sentence = sentence['original_sentence']
+            full_sentence_google += target_sentence + separate_word
+            # 문장 양 끝 무의미한 공백을 제거
+            target_sentence = target_sentence.strip()
+            # 문장이 마침표(.)로 끝나면 마침표 제거
+            if target_sentence[-1] == '.':
+                target_sentence = target_sentence[:-1]
+            # if target_sentence[-1] != '.':
+            #    target_sentence += '.'
+            target_sentence = abbriviation_v2(target_sentence, substituted_words)
+            target_sentence = rule_substitution_v2(target_sentence, substituted_words)
+
+            # 치환된 문장으로 업데이트
+            # sentence['original_sentence'] = target_sentence
+            # 최종 문장에 마침표+구분자을 포함하여 추가
+            full_sentence_wehealed += target_sentence + separate_word
+
+        # 구글 번역 수행
+        full_sentence_google = translate_api(full_sentence_google)
+        full_sentence_wehealed = translate_api(full_sentence_wehealed)
+
+        full_sentence_wehealed = re.sub('&gt', '>', full_sentence_wehealed)
+
+        # Json 가공을 위해 분리
+        full_sentence_google_token = full_sentence_google.split(separate_word)
+        full_sentence_wehealed_token = full_sentence_wehealed.split(separate_word)
+
+        for i in range(min(len(sentences),min(len(full_sentence_google_token), len(full_sentence_wehealed_token)))):
+            sentences[i]['translated_sentence_by_google'] = full_sentence_google_token[i].strip()
+            sentences[i]['translated_sentence_by_wehealed'] = full_sentence_wehealed_token[i].strip()
+
+        find_url_v2(substituted_words)
+        urls = []
+
+        for key, value in substituted_words.items():
+            url = {
+                'key': key,
+                'url': value
+            }
+            urls.append(url)
+
+
+        summaries = []
+
+        summaries.append(get_summary_v2(sentences))
+        """
+        for i in range(0, 1):
+            summary = {
+                'summary_text': sentences[0]['translated_sentence_by_wehealed'],
+                'summary_sentence_number': 0
+            }
+            summaries.append(summary)
+        """
+
+        responseData = {
+            'response_time': '11:11:11',
+            'picture_file_name': picture_file_name,
+            'sentences': sentences,
+            'summaries': summaries,
+            'describing_urls': urls
+        }
+        
+        print("request_data:")
+        print(request_data)
+        print("responseData:")
+        print(responseData)
+        
+        return JsonResponse(responseData)
+
+    else:
+        return JsonResponse({'picture_file_name': 'fail'})
 
 

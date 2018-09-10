@@ -1,0 +1,25 @@
+{
+    "picture_file_name": "",
+    "summary": "summary",
+    "urls": {
+        "단락": [
+            "https://terms.naver.com/entry.nhn?docId=2835758&cid=55655&categoryId=55655"
+        ],
+        "Lung Volume": [
+            "https://ko.wikipedia.org/wiki/%EC%A2%8C%EC%8B%AC%EC%8B%A4"
+        ],
+        "Regional Wall Motion Abnormality": [
+            "http://blog.naver.com/PostView.nhn?blogId=kimyhkimyh&logNo=220683531846&categoryNo=0&parentCategoryNo=0&viewDate=&currentPage=1&postListTopCurrentPage=1&from=postView"
+        ]
+    },
+    "response_time": "",
+    "sentences": {
+        "original_sentence": "Normal LV cavity dimension with Preserved systolic function calculated EF 53-58% Enlarged both atria.\nNo RWMA of LV.\nNormal LV wall thickness.\nModerate rheumatic MS(MVA = 1.4/1.1cm2 by PHT/Planimetry, Mean PG = 6mmHg).\nMild to moderate rheumatic AR(ll) with mild AS.\nSevere TR due to dilated tricuspid valve annulus and coaptation failure.\nNo intracardiac mass, thrombi nor pericardial effusion.\nDilated ascending aorta(42mm).\nSmall LR shunt was seen at the Interatrial septum ==> suggestive of PMV puncture site.\nConclusion) Slightly increased RA cavity size, otherwise, no significant interval change c/w previous exam.",
+        "sentence_number": 1,
+        "translated_sentence": {
+            "translatedText": "Preserved 수축기 기능이있는 정상 폐 체적 거리 치수 EF 53-58 % 두 개의 심방이 모두 확장되었습니다. LV의 지역 벽 운동 이상 없음 정상적인 폐 용적 두께. 중등 류마티스 성 MS (MVA = PH / PL 측정법에 의한 MVA = 1.4 / 1.1cm2, 평균 PG = 6mmHg). 가벼운 AS를 가진 류마티스 AR (ll). 확장 된 삼첨판 막륜과 협착 부전으로 인해 심각한 TR이 발생합니다. 심장 내 질량, 혈전 또는 심낭 삼출 없음. 확장 된 상행 대동맥 (42mm). 작은 LR 단락은 중격 막 중막에서 PMV 천자 부위를 암시하는 것으로 나타났습니다. 결론) RA 캐비티의 크기가 약간 증가했다. 그렇지 않으면 이전 검사에서 유의 한 간격 변화가 없었다.",
+            "input": "Normal Lung Volumecavity dimension with Preserved systolic function calculated EF 53-58% Enlarged both atria.\nNo Regional Wall Motion Abnormalityof LV.\nNormal Lung Volumewall thickness.\nModerate rheumatic MS(MVA = 1.4/1.1cm2 by PHT/Planimetry, Mean PG = 6mmHg).\nMild to moderate rheumatic AR(ll) with mild AS.\nSevere TR due to dilated tricuspid valve annulus and coaptation failure.\nNo intracardiac mass, thrombi nor pericardial effusion.\nDilated ascending aorta(42mm).\nSmall LR 단락 was seen at the Interatrial septum ==> suggestive of PMV puncture site.\nConclusion) Slightly increased RA cavity size, otherwise, no significant interval change c/w previous exam. ",
+            "detectedSourceLanguage": "en"
+        }
+    }
+}
